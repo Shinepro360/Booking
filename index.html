@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="hi">
+<html lang="hi" id="root">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -27,6 +27,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-siz
   padding-block:0 40px}
 .wrap{max-width:520px;margin:0 auto}
 header{padding:28px 0 18px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.lang{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.lang button{font:inherit;font-weight:600;font-size:15px;min-height:40px;padding:0 14px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.lang button.on{background:var(--brand);color:var(--brand-ink)}
 .logo{font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:.2px}
 .logo span{color:var(--brand)}
 header p{margin:4px 0 0;color:var(--muted)}
@@ -78,47 +82,48 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
 <body>
 <div class="wrap">
 <header>
-  <div class="logo">Shine<span>Pro360</span></div>
-  <p>जिम की सफ़ाई सेवा – कानपुर। नीचे फ़ॉर्म भरें, हम आपको कॉल करेंगे।</p>
+  <div class="top"><div class="logo">Shine<span>Pro360</span></div>
+  <div class="lang" role="group" aria-label="Language"><button type="button" id="lhi">हिंदी</button><button type="button" id="len">English</button></div></div>
+  <p data-i18n="tagline">जिम की सफ़ाई सेवा – कानपुर। नीचे फ़ॉर्म भरें, हम आपको कॉल करेंगे।</p>
 </header>
 
 <form id="form" class="card" novalidate>
   <div id="topErr" class="banner bad" hidden></div>
 
   <div>
-    <label for="customer_name">आपका नाम</label>
+    <label for="customer_name" data-i18n="l_name">आपका नाम</label>
     <input type="text" id="customer_name" maxlength="100" autocomplete="name">
     <div class="err" data-for="customer_name"></div>
   </div>
 
   <div>
-    <label for="gym_name">जिम का नाम</label>
+    <label for="gym_name" data-i18n="l_gym">जिम का नाम</label>
     <input type="text" id="gym_name" maxlength="150">
     <div class="err" data-for="gym_name"></div>
   </div>
 
   <div>
-    <label for="phone">मोबाइल नंबर <span class="hint">(10 अंक, WhatsApp वाला हो तो बेहतर)</span></label>
+    <label for="phone"><span data-i18n="l_phone">मोबाइल नंबर</span> <span class="hint" data-i18n="h_phone">(10 अंक, WhatsApp वाला हो तो बेहतर)</span></label>
     <input type="tel" id="phone" inputmode="numeric" maxlength="14" autocomplete="tel">
     <div class="err" data-for="phone"></div>
   </div>
 
   <div>
-    <label for="city">शहर</label>
+    <label for="city" data-i18n="l_city">शहर</label>
     <input type="text" id="city" maxlength="80" value="Kanpur">
     <div class="err" data-for="city"></div>
   </div>
 
   <div>
-    <label for="address">जिम का पूरा पता</label>
+    <label for="address" data-i18n="l_addr">जिम का पूरा पता</label>
     <textarea id="address" maxlength="300"></textarea>
     <div class="err" data-for="address"></div>
   </div>
 
   <div>
-    <label for="service">सेवा चुनें</label>
+    <label for="service" data-i18n="l_service">सेवा चुनें</label>
     <select id="service">
-      <option value="">-- चुनें --</option>
+      <option value="" data-i18n="choose">-- चुनें --</option>
       <option value="Floor Care Service">Floor Care Service</option>
       <option value="Full Deep Cleaning">Full Deep Cleaning</option>
     </select>
@@ -126,41 +131,41 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   </div>
 
   <div id="areaBox" hidden>
-    <label for="area_sqft">जिम का क्षेत्रफल <span class="hint">(वर्ग फ़ुट में)</span></label>
+    <label for="area_sqft"><span data-i18n="l_area">जिम का क्षेत्रफल</span> <span class="hint" data-i18n="h_area">(वर्ग फ़ुट में)</span></label>
     <input type="number" id="area_sqft" inputmode="numeric" min="1" max="1000000" step="1">
     <div class="err" data-for="area_sqft"></div>
     <div id="est" class="est" style="margin-top:10px" hidden></div>
   </div>
-  <div id="floorNote" class="note" hidden>Floor Care का रेट जिम देखने के बाद बताया जाएगा।</div>
+  <div id="floorNote" class="note" hidden data-i18n="floorNote">Floor Care का रेट जिम देखने के बाद बताया जाएगा।</div>
 
   <div>
-    <span class="lbl">काम की तारीख चुनें</span>
+    <span class="lbl" data-i18n="l_date">काम की तारीख चुनें</span>
     <div class="cal" id="cal">
       <div class="cal-head">
-        <button type="button" class="nav" id="prev" aria-label="पिछला महीना">‹</button>
+        <button type="button" class="nav" id="prev" aria-label="Previous month">‹</button>
         <b id="monthName"></b>
-        <button type="button" class="nav" id="next" aria-label="अगला महीना">›</button>
+        <button type="button" class="nav" id="next" aria-label="Next month">›</button>
       </div>
       <div class="grid" id="dows"></div>
       <div class="grid" id="days"></div>
       <div class="legend">
-        <span><i style="background:var(--card);border:1px solid var(--line)"></i>खाली</span>
-        <span><i style="background:var(--booked)"></i>बुक है</span>
-        <span><i style="background:var(--sel)"></i>आपकी चुनी</span>
+        <span><i style="background:var(--card);border:1px solid var(--line)"></i><span data-i18n="lg_free">खाली</span></span>
+        <span><i style="background:var(--booked)"></i><span data-i18n="lg_booked">बुक है</span></span>
+        <span><i style="background:var(--sel)"></i><span data-i18n="lg_sel">आपकी चुनी</span></span>
       </div>
     </div>
     <div class="picked" id="picked"></div>
-    <div class="note" id="twoDay" hidden>1500 वर्ग फ़ुट से बड़े जिम में काम 2 दिन चलता है, इसलिए चुनी तारीख और अगली तारीख दोनों खाली होनी चाहिए।</div>
+    <div class="note" id="twoDay" hidden data-i18n="twoDay">x</div>
     <div class="err" data-for="preferred_date"></div>
-    <div id="calErr" class="note" hidden>बुक हो चुकी तारीखें अभी लोड नहीं हो पाईं। फिर भी आप तारीख चुन सकते हैं, हम कॉल पर पक्का करेंगे।</div>
+    <div id="calErr" class="note" hidden data-i18n="calErr">x</div>
   </div>
 
   <div class="terms">
-    <b>ज़रूरी बातें</b>
+    <b data-i18n="t_title">ज़रूरी बातें</b>
     <ul>
-      <li>फ़ॉर्म भरने पर तारीख <b>24 घंटे</b> के लिए रोकी जाती है। इस बीच हम आपको कॉल करेंगे।</li>
-      <li>तारीख पक्की करने के लिए कुल रकम का <b>20% एडवांस</b> UPI QR से देना होगा। 24 घंटे में एडवांस न मिला तो तारीख दूसरे ग्राहक के लिए खुल जाएगी।</li>
-      <li>काम से कम <b>8 घंटे पहले</b> रद्द करना हो तो हमें फ़ोन करें। रद्द केवल फ़ोन पर होगा। एडवांस का <b>20% काटकर बाकी वापस</b> होगा (उदाहरण: ₹500 एडवांस पर ₹400 वापस, ₹100 कटेंगे)।</li>
+      <li data-i18n-html="t1">x</li>
+      <li data-i18n-html="t2">x</li>
+      <li data-i18n-html="t3">x</li>
     </ul>
   </div>
 
@@ -171,36 +176,109 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
 
   <label class="chk" for="agree">
     <input type="checkbox" id="agree">
-    <span>मैंने ऊपर की शर्तें पढ़ ली हैं और मैं सहमत हूँ।</span>
+    <span data-i18n="agree">x</span>
   </label>
   <div class="err" data-for="agree"></div>
 
-  <button class="btn" id="submit" type="submit">बुकिंग भेजें</button>
+  <button class="btn" id="submit" type="submit" data-i18n="send">बुकिंग भेजें</button>
 </form>
 
 <section id="success" class="card done" hidden>
   <div class="tick" aria-hidden="true">✓</div>
-  <h2 style="margin:0;font-family:var(--font-display)">बुकिंग मिल गई</h2>
-  <div>आपका रेफ़रेंस कोड</div>
+  <h2 style="margin:0;font-family:var(--font-display)" data-i18n="ok_title">x</h2>
+  <div data-i18n="ok_ref">x</div>
   <div class="ref" id="refCode"></div>
-  <p style="margin:0">आपकी तारीख <b>24 घंटे</b> के लिए रोकी गई है। हम जल्द आपके नंबर पर कॉल करेंगे। कृपया फ़ोन उठाएँ।</p>
-  <p class="note" style="margin:0">यह रेफ़रेंस कोड कॉल पर बताइएगा। एडवांस मिलने के बाद ही तारीख पक्की मानी जाएगी।</p>
+  <p style="margin:0" data-i18n-html="ok_p1">x</p>
+  <p class="note" style="margin:0" data-i18n="ok_p2">x</p>
 </section>
 
-<footer>ShinePro360 · कानपुर</footer>
+<footer data-i18n="footer">x</footer>
 </div>
 
 <script>
 (function(){
-  // यहाँ अपनी public-booking function का पता रखा है
   var API = "https://nohnzyyaawarvhrmaota.supabase.co/functions/v1/public-booking";
-  var RATE = 5; // Full Deep Cleaning, रुपये प्रति वर्ग फ़ुट
+  var RATE = 5;
+
+  var T = {
+    hi:{
+      tagline:"जिम की सफ़ाई सेवा – कानपुर। नीचे फ़ॉर्म भरें, हम आपको कॉल करेंगे।",
+      l_name:"आपका नाम", l_gym:"जिम का नाम", l_phone:"मोबाइल नंबर", h_phone:"(10 अंक, WhatsApp वाला हो तो बेहतर)",
+      l_city:"शहर", l_addr:"जिम का पूरा पता", l_service:"सेवा चुनें", choose:"-- चुनें --",
+      l_area:"जिम का क्षेत्रफल", h_area:"(वर्ग फ़ुट में)",
+      floorNote:"Floor Care का रेट जिम देखने के बाद बताया जाएगा।",
+      l_date:"काम की तारीख चुनें", lg_free:"खाली", lg_booked:"बुक है", lg_sel:"आपकी चुनी",
+      twoDay:"1500 वर्ग फ़ुट से बड़े जिम में काम 2 दिन चलता है, इसलिए चुनी तारीख और अगली तारीख दोनों खाली होनी चाहिए।",
+      calErr:"बुक हो चुकी तारीखें अभी लोड नहीं हो पाईं। फिर भी आप तारीख चुन सकते हैं, हम कॉल पर पक्का करेंगे।",
+      t_title:"ज़रूरी बातें",
+      t1:"फ़ॉर्म भरने पर तारीख <b>24 घंटे</b> के लिए रोकी जाती है। इस बीच हम आपको कॉल करेंगे।",
+      t2:"तारीख पक्की करने के लिए कुल रकम का <b>20% एडवांस</b> UPI QR से देना होगा। 24 घंटे में एडवांस न मिला तो तारीख दूसरे ग्राहक के लिए खुल जाएगी।",
+      t3:"काम से कम <b>8 घंटे पहले</b> रद्द करना हो तो हमें फ़ोन करें। रद्द केवल फ़ोन पर होगा। एडवांस का <b>20% काटकर बाकी वापस</b> होगा (उदाहरण: ₹500 एडवांस पर ₹400 वापस, ₹100 कटेंगे)।",
+      agree:"मैंने ऊपर की शर्तें पढ़ ली हैं और मैं सहमत हूँ।",
+      send:"बुकिंग भेजें", sending:"भेज रहे हैं...",
+      ok_title:"बुकिंग मिल गई", ok_ref:"आपका रेफ़रेंस कोड",
+      ok_p1:"आपकी तारीख <b>24 घंटे</b> के लिए रोकी गई है। हम जल्द आपके नंबर पर कॉल करेंगे। कृपया फ़ोन उठाएँ।",
+      ok_p2:"यह रेफ़रेंस कोड कॉल पर बताइएगा। एडवांस मिलने के बाद ही तारीख पक्की मानी जाएगी।",
+      footer:"ShinePro360 · कानपुर",
+      months:["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
+      dows:["र","सो","मं","बु","गु","शु","श"],
+      picked:"चुनी हुई तारीख: ",
+      estLine:function(t,a,adv){return "अनुमानित रकम: <b>₹"+t+"</b> ("+a+" × ₹"+RATE+")<br>20% एडवांस: <b>₹"+adv+"</b>. अंतिम रकम कॉल पर पक्की होगी।"},
+      e_name:"नाम लिखें।", e_gym:"जिम का नाम लिखें।", e_phone:"सही 10 अंक का मोबाइल नंबर लिखें।",
+      e_city:"शहर लिखें।", e_addr:"पता लिखें।", e_service:"सेवा चुनें।",
+      e_area:"क्षेत्रफल पूरी संख्या में लिखें, जैसे 1200।", e_date:"तारीख चुनें।", e_taken:"यह तारीख बुक है, दूसरी चुनें।",
+      e_agree:"आगे बढ़ने के लिए सहमति ज़रूरी है।",
+      s_taken:"यह तारीख पहले से बुक है। दूसरी तारीख चुनें।",
+      s_phone:"इस नंबर की एक बुकिंग पहले से पुष्टि का इंतज़ार कर रही है। हम आपको कॉल करेंगे।",
+      s_429:"बहुत ज़्यादा कोशिशें हुईं। कृपया कुछ देर बाद फिर करें।",
+      s_400:"कुछ जानकारी सही नहीं है। कृपया फ़ॉर्म जाँचकर फिर भेजें।",
+      s_500:"बुकिंग सेव नहीं हो पाई। कृपया थोड़ी देर बाद फिर कोशिश करें।",
+      s_net:"इंटरनेट की दिक्कत लग रही है। कनेक्शन देखकर फिर कोशिश करें।",
+      prev:"पिछला महीना", next:"अगला महीना"
+    },
+    en:{
+      tagline:"Gym cleaning services in Kanpur. Fill in the form and we will call you.",
+      l_name:"Your name", l_gym:"Gym name", l_phone:"Mobile number", h_phone:"(10 digits, preferably your WhatsApp number)",
+      l_city:"City", l_addr:"Full gym address", l_service:"Select service", choose:"-- Select --",
+      l_area:"Gym area", h_area:"(in square feet)",
+      floorNote:"The Floor Care rate will be quoted after we inspect the gym.",
+      l_date:"Choose the work date", lg_free:"Available", lg_booked:"Booked", lg_sel:"Your pick",
+      twoDay:"Gyms above 1500 sq ft need 2 days of work, so the chosen date and the next date must both be free.",
+      calErr:"Booked dates could not be loaded right now. You can still pick a date and we will confirm on the call.",
+      t_title:"Important points",
+      t1:"After you submit, your date is held for <b>24 hours</b>. We will call you in that time.",
+      t2:"To confirm the date you must pay a <b>20% advance</b> of the total amount by UPI QR. If the advance is not received within 24 hours, the date opens up for other customers.",
+      t3:"To cancel, call us at least <b>8 hours before</b> the work. Cancellation is only by phone. <b>20% of the advance is deducted</b> and the rest is refunded (example: on a ₹500 advance, ₹400 is refunded and ₹100 is deducted).",
+      agree:"I have read the terms above and I agree.",
+      send:"Submit booking", sending:"Sending...",
+      ok_title:"Booking received", ok_ref:"Your reference code",
+      ok_p1:"Your date is held for <b>24 hours</b>. We will call your number soon. Please pick up the call.",
+      ok_p2:"Please quote this reference code on the call. The date is confirmed only after the advance is received.",
+      footer:"ShinePro360 · Kanpur",
+      months:["January","February","March","April","May","June","July","August","September","October","November","December"],
+      dows:["S","M","T","W","T","F","S"],
+      picked:"Selected date: ",
+      estLine:function(t,a,adv){return "Estimated amount: <b>₹"+t+"</b> ("+a+" × ₹"+RATE+")<br>20% advance: <b>₹"+adv+"</b>. The final amount will be confirmed on the call."},
+      e_name:"Enter your name.", e_gym:"Enter the gym name.", e_phone:"Enter a valid 10-digit mobile number.",
+      e_city:"Enter the city.", e_addr:"Enter the address.", e_service:"Select a service.",
+      e_area:"Enter the area as a whole number, e.g. 1200.", e_date:"Choose a date.", e_taken:"This date is booked. Choose another.",
+      e_agree:"You must agree to continue.",
+      s_taken:"This date is already booked. Please choose another date.",
+      s_phone:"A booking for this number is already waiting for confirmation. We will call you.",
+      s_429:"Too many attempts. Please try again after some time.",
+      s_400:"Some details are not valid. Please check the form and submit again.",
+      s_500:"Could not save the booking. Please try again in a little while.",
+      s_net:"There seems to be an internet problem. Check your connection and try again.",
+      prev:"Previous month", next:"Next month"
+    }
+  };
+
+  var LANG = "hi";
+  try{var sv=localStorage.getItem("lang"); if(sv==="hi"||sv==="en") LANG=sv;}catch(e){}
+  function t(k){return T[LANG][k]}
 
   var $ = function(id){return document.getElementById(id)};
-  var MONTHS = ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"];
-  var DOWS = ["र","सो","मं","बु","गु","शु","श"];
 
-  // भारत (IST) की आज की तारीख, फ़ोन की टाइमज़ोन चाहे जो हो
   function istToday(){
     var p = new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
     var a = p.split("-"); return new Date(Date.UTC(+a[0],+a[1]-1,+a[2]));
@@ -214,8 +292,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   var booked = {};
   var selected = "";
   var view = new Date(Date.UTC(minDate.getUTCFullYear(),minDate.getUTCMonth(),1));
-
-  $("dows").innerHTML = DOWS.map(function(d){return '<div class="dow">'+d+'</div>'}).join("");
+  var lastErr = {};   // key -> error key, to re-translate on language change
 
   function needsTwoDays(){
     return $("service").value==="Full Deep Cleaning" && (+$("area_sqft").value)>1500;
@@ -229,29 +306,46 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
     return true;
   }
 
+  function fmt(s){var a=s.split("-");return +a[2]+" "+t("months")[+a[1]-1]+" "+a[0]}
+
   function render(){
     var y = view.getUTCFullYear(), m = view.getUTCMonth();
-    $("monthName").textContent = MONTHS[m]+" "+y;
+    $("monthName").textContent = t("months")[m]+" "+y;
+    $("dows").innerHTML = t("dows").map(function(d){return '<div class="dow">'+d+'</div>'}).join("");
     var first = new Date(Date.UTC(y,m,1)).getUTCDay();
     var count = new Date(Date.UTC(y,m+1,0)).getUTCDate();
     var html = "";
     for(var i=0;i<first;i++) html += '<div class="day blank"></div>';
     for(var d=1; d<=count; d++){
       var dt = new Date(Date.UTC(y,m,d)); var s = iso(dt);
-      var cls = "day", dis = false, label = d;
+      var cls = "day", dis = false;
       if(dt<minDate || dt>maxDate){cls+=" off"; dis=true}
       else if(!isFree(s)){cls+=" booked"; dis=true}
       else if(s===selected){cls+=" sel"}
-      html += '<button type="button" class="'+cls+'" data-d="'+s+'"'+(dis?' disabled':'')+'>'+label+'</button>';
+      html += '<button type="button" class="'+cls+'" data-d="'+s+'"'+(dis?' disabled':'')+'>'+d+'</button>';
     }
     $("days").innerHTML = html;
     $("prev").disabled = (y===minDate.getUTCFullYear() && m<=minDate.getUTCMonth()) || (y<minDate.getUTCFullYear());
     var maxV = new Date(Date.UTC(maxDate.getUTCFullYear(),maxDate.getUTCMonth(),1));
     $("next").disabled = view>=maxV;
-    $("picked").textContent = selected ? "चुनी हुई तारीख: "+fmt(selected) : "";
+    $("picked").textContent = selected ? t("picked")+fmt(selected) : "";
     $("twoDay").hidden = !needsTwoDays();
   }
-  function fmt(s){var a=s.split("-");return +a[2]+" "+MONTHS[+a[1]-1]+" "+a[0]}
+
+  function applyLang(){
+    document.documentElement.lang = LANG;
+    document.querySelectorAll("[data-i18n]").forEach(function(e){e.textContent = t(e.getAttribute("data-i18n"))});
+    document.querySelectorAll("[data-i18n-html]").forEach(function(e){e.innerHTML = t(e.getAttribute("data-i18n-html"))});
+    $("lhi").className = LANG==="hi"?"on":""; $("len").className = LANG==="en"?"on":"";
+    $("prev").setAttribute("aria-label",t("prev")); $("next").setAttribute("aria-label",t("next"));
+    if(!BUSY) $("submit").textContent = t("send");
+    updateEst(); render();
+    Object.keys(lastErr).forEach(function(k){setErr(k,lastErr[k])});
+    if(lastTop) topErr(lastTop,true);
+  }
+  function setLang(l){LANG=l; try{localStorage.setItem("lang",l)}catch(e){} applyLang()}
+  $("lhi").onclick=function(){setLang("hi")};
+  $("len").onclick=function(){setLang("en")};
 
   $("days").addEventListener("click",function(e){
     var b = e.target.closest("button.day"); if(!b || b.disabled) return;
@@ -280,22 +374,31 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   function updateEst(){
     var a = +$("area_sqft").value, box = $("est");
     if($("service").value==="Full Deep Cleaning" && a>0){
-      var t = a*RATE, adv = Math.round(t*0.2);
+      var tot = a*RATE, adv = Math.round(tot*0.2);
       box.hidden = false;
-      box.innerHTML = "अनुमानित रकम: <b>₹"+t.toLocaleString("en-IN")+"</b> ("+a+" × ₹"+RATE+")<br>20% एडवांस: <b>₹"+adv.toLocaleString("en-IN")+"</b>. अंतिम रकम कॉल पर पक्की होगी।";
+      box.innerHTML = t("estLine")(tot.toLocaleString("en-IN"), a, adv.toLocaleString("en-IN"));
     } else box.hidden = true;
   }
   $("service").addEventListener("change",updateService);
   $("area_sqft").addEventListener("input",function(){updateEst(); if(selected && !isFree(selected)) selected=""; render()});
 
-  function setErr(k,msg){
-    var el = document.querySelector('.err[data-for="'+k+'"]'); if(el) el.textContent = msg;
+  // setErr takes a message KEY (or "" to clear)
+  function setErr(k,key){
+    var el = document.querySelector('.err[data-for="'+k+'"]');
+    if(key){lastErr[k]=key} else {delete lastErr[k]}
+    if(el) el.textContent = key ? t(key) : "";
   }
   function clearErrs(){
+    lastErr = {}; lastTop = "";
     document.querySelectorAll(".err").forEach(function(e){e.textContent=""});
     $("topErr").hidden = true;
   }
-  function topErr(msg){var b=$("topErr"); b.textContent=msg; b.hidden=false; b.scrollIntoView({behavior:"smooth",block:"center"})}
+  var lastTop = "";
+  function topErr(key,quiet){
+    lastTop = key;
+    var b=$("topErr"); b.textContent=t(key); b.hidden=false;
+    if(!quiet) b.scrollIntoView({behavior:"smooth",block:"center"});
+  }
 
   function normPhone(v){
     var d = String(v).replace(/\D/g,"");
@@ -306,20 +409,20 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   function validate(){
     clearErrs(); var ok = true;
     function bad(k,m){setErr(k,m); ok=false}
-    if(!$("customer_name").value.trim()) bad("customer_name","नाम लिखें।");
-    if(!$("gym_name").value.trim()) bad("gym_name","जिम का नाम लिखें।");
-    if(!/^[6-9]\d{9}$/.test(normPhone($("phone").value))) bad("phone","सही 10 अंक का मोबाइल नंबर लिखें।");
-    if(!$("city").value.trim()) bad("city","शहर लिखें।");
-    if(!$("address").value.trim()) bad("address","पता लिखें।");
+    if(!$("customer_name").value.trim()) bad("customer_name","e_name");
+    if(!$("gym_name").value.trim()) bad("gym_name","e_gym");
+    if(!/^[6-9]\d{9}$/.test(normPhone($("phone").value))) bad("phone","e_phone");
+    if(!$("city").value.trim()) bad("city","e_city");
+    if(!$("address").value.trim()) bad("address","e_addr");
     var sv = $("service").value;
-    if(!sv) bad("service","सेवा चुनें।");
+    if(!sv) bad("service","e_service");
     if(sv==="Full Deep Cleaning"){
       var a = $("area_sqft").value;
-      if(!/^\d+$/.test(a) || +a<1 || +a>1000000) bad("area_sqft","क्षेत्रफल पूरी संख्या में लिखें, जैसे 1200।");
+      if(!/^\d+$/.test(a) || +a<1 || +a>1000000) bad("area_sqft","e_area");
     }
-    if(!selected) bad("preferred_date","तारीख चुनें।");
-    else if(!isFree(selected)) bad("preferred_date","यह तारीख बुक है, दूसरी चुनें।");
-    if(!$("agree").checked) bad("agree","आगे बढ़ने के लिए सहमति ज़रूरी है।");
+    if(!selected) bad("preferred_date","e_date");
+    else if(!isFree(selected)) bad("preferred_date","e_taken");
+    if(!$("agree").checked) bad("agree","e_agree");
     return ok;
   }
 
@@ -343,7 +446,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
     };
     if(body.service==="Full Deep Cleaning") body.area_sqft = +$("area_sqft").value;
 
-    BUSY = true; $("submit").disabled = true; $("submit").textContent = "भेज रहे हैं...";
+    BUSY = true; $("submit").disabled = true; $("submit").textContent = t("sending");
     fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
       .then(function(r){return r.json().catch(function(){return {}}).then(function(j){return {s:r.status,j:j}})})
       .then(function(o){
@@ -352,22 +455,18 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
           $("form").hidden = true; $("success").hidden = false;
           window.scrollTo({top:0,behavior:"smooth"});
         } else if(o.s===409){
-          topErr((o.j && (o.j.error||o.j.message)) || "यह तारीख या नंबर पहले से बुक है। दूसरी तारीख चुनें।");
+          var m = (o.j && o.j.error) || "";
+          topErr(m.indexOf("phone number")>=0 ? "s_phone" : "s_taken");
           loadBooked();
-        } else if(o.s===429){
-          topErr("बहुत ज़्यादा कोशिशें हुईं। कृपया कुछ देर बाद फिर करें।");
-        } else if(o.s===400){
-          var list = (o.j && o.j.errors) || [];
-          topErr("कुछ जानकारी सही नहीं है: " + (list.length ? list.join(", ") : "कृपया फ़ॉर्म जाँचें।"));
-        } else {
-          topErr("बुकिंग सेव नहीं हो पाई। कृपया थोड़ी देर बाद फिर कोशिश करें।");
-        }
+        } else if(o.s===429){ topErr("s_429");
+        } else if(o.s===400){ topErr("s_400");
+        } else { topErr("s_500"); }
       })
-      .catch(function(){topErr("इंटरनेट की दिक्कत लग रही है। कनेक्शन देखकर फिर कोशिश करें।")})
-      .then(function(){BUSY=false; $("submit").disabled=false; $("submit").textContent="बुकिंग भेजें"});
+      .catch(function(){topErr("s_net")})
+      .then(function(){BUSY=false; $("submit").disabled=false; $("submit").textContent=t("send")});
   });
 
-  render(); loadBooked();
+  applyLang(); loadBooked();
 })();
 </script>
 </body>
