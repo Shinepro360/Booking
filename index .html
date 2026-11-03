@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ShinePro360 बुकिंग</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Mukta:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f6f7; --card:#ffffff; --ink:#12262e; --muted:#5b707a; --line:#d5dfe3;
+  --brand:#0b6b75; --brand-ink:#ffffff; --accent:#f2b134; --danger:#b3261e; --ok:#17794a;
+  --booked:#e3e8ea; --booked-ink:#8a9aa2; --sel:#0b6b75;
+  --font-display:'Mukta','Hind',system-ui,sans-serif; --font-body:'Hind',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0e1a1f; --card:#162830; --ink:#e8f0f2; --muted:#9db1b9; --line:#2b424c;
+  --brand:#3fb5c2; --brand-ink:#06242a; --accent:#f2b134; --danger:#ff8a80; --ok:#5fd39b;
+  --booked:#22363f; --booked-ink:#6f858f; --sel:#3fb5c2; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 40px}
+.wrap{max-width:520px;margin:0 auto}
+header{padding:24px 0 14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.lang{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.lang button{font:inherit;font-weight:600;font-size:15px;min-height:40px;padding:0 14px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.lang button.on{background:var(--brand);color:var(--brand-ink)}
+.logo{font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:.2px}
+.logo span{color:var(--brand)}
+header p{margin:4px 0 0;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 14px}
+.tabs button{font:inherit;font-weight:600;font-size:15px;line-height:1.2;min-height:48px;padding:6px 4px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.tabs button.on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+@media (max-width:460px){.tabs{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:18px}
+h2.t{margin:0;font-family:var(--font-display);font-size:22px}
+label,.lbl{display:block;font-weight:600;margin-bottom:6px}
+.hint{font-weight:400;color:var(--muted);font-size:14px}
+input[type=text],input[type=tel],input[type=number],select,textarea{
+  width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);
+  border-radius:10px;padding:12px 14px;min-height:48px}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.err{color:var(--danger);font-size:14px;margin-top:4px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cal{border:1.5px solid var(--line);border-radius:12px;padding:12px;background:var(--bg)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-head b{font-family:var(--font-display);font-size:19px}
+.nav{width:44px;height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;cursor:pointer}
+.nav:disabled{opacity:.35;cursor:default}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.dow{font-size:13px;color:var(--muted);padding:4px 0}
+.day{height:48px;border-radius:9px;border:0;font:inherit;font-weight:500;background:var(--card);color:var(--ink);cursor:pointer;padding:0;line-height:1.1}
+.day small{display:block;font-size:10px;line-height:1;font-weight:700;color:var(--ok);margin-top:2px}
+.day.off{background:transparent;color:var(--booked-ink);cursor:default;opacity:.55}
+.day.booked{background:var(--booked);color:var(--booked-ink);text-decoration:line-through;cursor:not-allowed}
+.day.hot{box-shadow:inset 0 0 0 2px var(--accent)}
+.day.sel{background:var(--sel);color:var(--brand-ink);font-weight:700}
+.day.sel small{color:var(--brand-ink)}
+.day.blank{background:transparent;cursor:default}
+.legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.picked{margin-top:8px;font-weight:600;color:var(--brand)}
+.note{font-size:14px;color:var(--muted)}
+.est{background:var(--bg);border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:15px}
+.est .r{display:flex;justify-content:space-between;gap:10px}
+.est .r b{font-variant-numeric:tabular-nums}
+.est .f{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;font-size:17px}
+.est .g{color:var(--ok)}
+.terms{background:var(--bg);border-radius:10px;padding:14px 16px;font-size:15px}
+.terms ul{margin:6px 0 0;padding-left:20px}
+.terms li{margin:4px 0}
+.chk{display:flex;gap:12px;align-items:flex-start;font-weight:500}
+.chk input{width:24px;height:24px;margin-top:3px;flex:none}
+.addons{display:flex;flex-direction:column;gap:12px}
+.plan{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);font-weight:400;margin:0;cursor:pointer}
+.plan input{width:22px;height:22px;margin-top:3px;flex:none}
+.plan b{font-size:18px}
+.plan .pr{font-family:var(--font-display);font-weight:800;color:var(--brand);font-size:19px;white-space:nowrap}
+.plan .d{font-size:14px;color:var(--muted)}
+.plan .h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.plan .body{flex:1;min-width:0}
+.prod{display:flex;gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--bg);font-weight:500;margin:0}
+.prod input[type=checkbox]{width:22px;height:22px;flex:none}
+.prod span{flex:1;min-width:0}
+.prod input[type=number]{width:84px;min-height:42px;flex:none}
+.btn{font:inherit;font-weight:700;font-size:18px;min-height:54px;border:0;border-radius:12px;background:var(--brand);color:var(--brand-ink);cursor:pointer;width:100%}
+.btn.sec{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.6;cursor:wait}
+.banner{border-radius:10px;padding:12px 14px;font-size:15px}
+.banner.bad{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger);border:1px solid var(--danger)}
+.done{text-align:center;gap:14px;align-items:center}
+.ref{font-family:var(--font-display);font-size:34px;font-weight:800;letter-spacing:3px;color:var(--brand);background:var(--bg);border-radius:12px;padding:8px 18px}
+.tick{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:34px}
+footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:no-preference){.day,.btn,.tabs button{transition:background .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="top"><div class="logo">Shine<span>Pro360</span></div>
+  <div class="lang" role="group" aria-label="Language"><button type="button" id="lhi">हिंदी</button><button type="button" id="len">English</button></div></div>
+  <p data-i18n="tagline">x</p>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <button type="button" data-tab="book" data-i18n="tab_book">x</button>
+  <button type="button" data-tab="amc" data-i18n="tab_amc">x</button>
+  <button type="button" data-tab="products" data-i18n="tab_prod">x</button>
+  <button type="button" data-tab="enquiry" data-i18n="tab_enq">x</button>
+</nav>
+
+<!-- ===== ऑर्डर बुक करें ===== -->
+<section id="tab-book">
+<form id="form" class="card" novalidate>
+  <div id="topErr" class="banner bad" hidden></div>
+  <div><label for="customer_name" data-i18n="l_name">x</label>
+    <input type="text" id="customer_name" maxlength="100" autocomplete="name"><div class="err" data-for="customer_name"></div></div>
+  <div><label for="gym_name" data-i18n="l_gym">x</label>
+    <input type="text" id="gym_name" maxlength="150"><div class="err" data-for="gym_name"></div></div>
+  <div><label for="phone"><span data-i18n="l_phone">x</span> <span class="hint" data-i18n="h_phone">x</span></label>
+    <input type="tel" id="phone" inputmode="numeric" maxlength="14" autocomplete="tel"><div class="err" data-for="phone"></div></div>
+  <div><label for="city" data-i18n="l_city">x</label>
+    <input type="text" id="city" maxlength="80" value="Kanpur"><div class="err" data-for="city"></div></div>
+  <div><label for="address" data-i18n="l_addr">x</label>
+    <textarea id="address" maxlength="300"></textarea><div class="err" data-for="address"></div></div>
+  <div><label for="service" data-i18n="l_service">x</label>
+    <select id="service">
+      <option value="" data-i18n="choose">x</option>
+      <option value="Floor Care Service">Floor Care Service (₹4 / sq ft)</option>
+      <option value="Full Deep Cleaning">Full Deep Cleaning (₹5 / sq ft)</option>
+    </select><div class="err" data-for="service"></div></div>
+
+  <div id="areaBox" hidden>
+    <label for="area_sqft"><span data-i18n="l_area">x</span> <span class="hint" data-i18n="h_area">x</span></label>
+    <input type="number" id="area_sqft" inputmode="numeric" min="1" max="1000000" step="1">
+    <div class="err" data-for="area_sqft"></div>
+  </div>
+
+  <div id="addons" class="addons" hidden>
+    <span class="lbl" style="margin:0" data-i18n="l_addons">x</span>
+    <label class="chk" for="ad_dumb" style="margin:0"><input type="checkbox" id="ad_dumb"><span data-i18n="ad_dumb">x</span></label>
+    <div id="mirrorBox" class="addons">
+      <label class="chk" for="ad_mirror" style="margin:0"><input type="checkbox" id="ad_mirror"><span data-i18n="ad_mirror">x</span></label>
+      <div id="mirrorArea" hidden>
+        <label for="mirror_sqft" data-i18n="l_mirror_area">x</label>
+        <input type="number" id="mirror_sqft" inputmode="numeric" min="1" max="100000" step="1">
+        <div class="err" data-for="mirror_sqft"></div>
+      </div>
+    </div>
+    <div id="deepNote" class="note" hidden data-i18n="deepNote">x</div>
+  </div>
+
+  <div id="est" class="est" hidden></div>
+
+  <div>
+    <span class="lbl" data-i18n="l_date">x</span>
+    <div class="cal" id="cal">
+      <div class="cal-head">
+        <button type="button" class="nav" id="prev" aria-label="Previous month">‹</button>
+        <b id="monthName"></b>
+        <button type="button" class="nav" id="next" aria-label="Next month">›</button>
+      </div>
+      <div class="grid" id="dows"></div>
+      <div class="grid" id="days"></div>
+      <div class="legend">
+        <span><i style="background:var(--card);border:1px solid var(--line)"></i><span data-i18n="lg_free">x</span></span>
+        <span><i style="background:var(--booked)"></i><span data-i18n="lg_booked">x</span></span>
+        <span><i style="background:var(--sel)"></i><span data-i18n="lg_sel">x</span></span>
+        <span><i style="box-shadow:inset 0 0 0 2px var(--accent)"></i><span data-i18n="lg_hot">x</span></span>
+      </div>
+      <div class="note" style="margin-top:8px" data-i18n="offerInfo">x</div>
+    </div>
+    <div class="picked" id="picked"></div>
+    <div class="note" id="twoDay" hidden data-i18n="twoDay">x</div>
+    <div class="err" data-for="preferred_date"></div>
+    <div id="calErr" class="note" hidden data-i18n="calErr">x</div>
+  </div>
+
+  <div><label for="notes" data-i18n="l_notes">x</label>
+    <textarea id="notes" maxlength="500"></textarea></div>
+
+  <div class="terms">
+    <b data-i18n="t_title">x</b>
+    <ul>
+      <li data-i18n-html="t1">x</li>
+      <li data-i18n-html="t2">x</li>
+      <li data-i18n-html="t3">x</li>
+    </ul>
+  </div>
+  <div class="hp" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
+  <label class="chk" for="agree"><input type="checkbox" id="agree"><span data-i18n="agree">x</span></label>
+  <div class="err" data-for="agree"></div>
+  <button class="btn" id="submit" type="submit" data-i18n="send">x</button>
+</form>
+
+<section id="success" class="card done" hidden>
+  <div class="tick" aria-hidden="true">✓</div>
+  <h2 style="margin:0;font-family:var(--font-display)" data-i18n="ok_title">x</h2>
+  <div data-i18n="ok_ref">x</div>
+  <div class="ref" id="refCode"></div>
+  <p style="margin:0" data-i18n-html="ok_p1">x</p>
+  <p class="note" style="margin:0" data-i18n="ok_p2">x</p>
+</section>
+</section>
+
+<!-- ===== AMC ===== -->
+<section id="tab-amc" hidden>
+<form id="amcForm" class="card" novalidate data-kind="amc">
+  <h2 class="t" data-i18n="amc_title">x</h2>
+  <div class="note" data-i18n="amc_note">x</div>
+  <div id="amc_top" class="banner bad" hidden></div>
+  <div>
+    <span class="lbl" data-i18n="l_plan">x</span>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <label class="plan" for="plan_e"><input type="radio" name="plan" id="plan_e" value="Essential Care"><div class="body"><div class="h"><b>Essential Care</b><span class="pr">₹3,000<span class="hint" data-i18n="per_month">x</span></span></div><div class="d" data-i18n="pl_e">x</div></div></label>
+      <label class="plan" for="plan_a"><input type="radio" name="plan" id="plan_a" value="Advanced Care"><div class="body"><div class="h"><b>Advanced Care</b><span class="pr">₹4,500<span class="hint" data-i18n="per_month">x</span></span></div><div class="d" data-i18n="pl_a">x</div></div></label>
+      <label class="plan" for="plan_c"><input type="radio" name="plan" id="plan_c" value="Complete Care"><div class="body"><div class="h"><b>Complete Care</b><span class="pr">₹5,000<span class="hint" data-i18n="per_month">x</span></span></div><div class="d" data-i18n="pl_c">x</div></div></label>
+    </div>
+    <div class="err" data-for="amc_plan"></div>
+  </div>
+  <div><label for="amc_area"><span data-i18n="l_area">x</span> <span class="hint" data-i18n="h_area">x</span></label>
+    <input type="number" id="amc_area" inputmode="numeric" min="1" max="1000000" step="1"><div class="err" data-for="amc_area"></div>
+    <div id="amc_est" class="note" style="margin-top:6px" hidden></div></div>
+  <div class="common" data-p="amc"></div>
+  <div><label for="amc_details"><span data-i18n="l_notes">x</span></label><textarea id="amc_details" maxlength="800"></textarea></div>
+  <button class="btn" type="submit" data-i18n="send_lead">x</button>
+</form>
+</section>
+
+<!-- ===== प्रोडक्ट ===== -->
+<section id="tab-products" hidden>
+<form id="prodForm" class="card" novalidate data-kind="product">
+  <h2 class="t" data-i18n="prod_title">x</h2>
+  <div class="note" data-i18n="prod_note">x</div>
+  <div id="prod_top" class="banner bad" hidden></div>
+  <div style="display:flex;flex-direction:column;gap:10px" id="prodList"></div>
+  <div class="err" data-for="prod_items"></div>
+  <div class="common" data-p="prod"></div>
+  <div><label for="prod_details"><span data-i18n="l_addr_opt">x</span></label><textarea id="prod_details" maxlength="500"></textarea></div>
+  <button class="btn" type="submit" data-i18n="send_lead">x</button>
+</form>
+</section>
+
+<!-- ===== पूछताछ ===== -->
+<section id="tab-enquiry" hidden>
+<form id="enqForm" class="card" novalidate data-kind="enquiry">
+  <h2 class="t" data-i18n="enq_title">x</h2>
+  <div id="enq_top" class="banner bad" hidden></div>
+  <div class="common" data-p="enq"></div>
+  <div><label for="enq_details" data-i18n="l_msg">x</label><textarea id="enq_details" maxlength="800"></textarea>
+    <div class="err" data-for="enq_details"></div></div>
+  <button class="btn" type="submit" data-i18n="send_lead">x</button>
+</form>
+</section>
+
+<!-- एक साझा धन्यवाद कार्ड (तीनों पूछताछ फ़ॉर्म के लिए) -->
+<section id="leadOk" class="card done" hidden>
+  <div class="tick" aria-hidden="true">✓</div>
+  <h2 style="margin:0;font-family:var(--font-display)" data-i18n="lead_ok_title">x</h2>
+  <div class="ref" id="leadRef"></div>
+  <p style="margin:0" data-i18n="lead_ok_p">x</p>
+  <button class="btn sec" type="button" id="leadAgain" data-i18n="again">x</button>
+</section>
+
+<footer data-i18n="footer">x</footer>
+</div>
+
+<script>
+(function(){
+  var API = "https://nohnzyyaawarvhrmaota.supabase.co/functions/v1/public-booking";
+
+  // ===== दाम और ऑफ़र (यहाँ बदलें) =====
+  var RATES = {"Floor Care Service":4, "Full Deep Cleaning":5};   // ₹ प्रति वर्ग फ़ुट
+  var MIRROR_RATE = 1.5, DUMBBELL_PRICE = 1500;
+  var OFFER_WEEKDAY = {0:5, 1:10, 2:15, 3:0, 4:15, 5:0, 6:5};     // 0=रवि 1=सोम 2=मंगल 3=बुध 4=गुरु 5=शुक्र 6=शनि
+  var OFFER_LAST_WEEKEND = 10;                                    // महीने का आख़िरी शनि और रवि
+  var OFFER_RANGE = {from:11, to:15, pct:18};                     // इन तारीखों के काम पर
+  // ====================================
+  function offerPct(s){
+    if(!s) return 0;
+    var a=s.split("-"), y=+a[0], m=+a[1], d=+a[2];
+    var wd=new Date(Date.UTC(y,m-1,d)).getUTCDay();
+    var dim=new Date(Date.UTC(y,m,0)).getUTCDate();
+    var p=OFFER_WEEKDAY[wd]||0;
+    if((wd===0||wd===6) && d+7>dim) p=Math.max(p,OFFER_LAST_WEEKEND);
+    if(d>=OFFER_RANGE.from && d<=OFFER_RANGE.to) p=Math.max(p,OFFER_RANGE.pct);
+    return p;
+  }
+
+  var PRODUCTS = ["Gym Rubber Floor Cleaner","Gym Floor Polish","Dumbbell & Weight Plate Cleaner and Polish","Normal Floor Cleaner","Hand Wash Liquid"];
+
+  var T = {
+    hi:{
+      tagline:"जिम की सफ़ाई सेवा – कानपुर। फ़ॉर्म भरें, हम आपको कॉल करेंगे।",
+      tab_book:"ऑर्डर बुक करें", tab_amc:"AMC प्लान", tab_prod:"प्रोडक्ट", tab_enq:"पूछताछ",
+      l_name:"आपका नाम", l_gym:"जिम का नाम", l_phone:"मोबाइल नंबर", h_phone:"(10 अंक, WhatsApp वाला हो तो बेहतर)",
+      l_city:"शहर", l_addr:"जिम का पूरा पता", l_service:"सेवा चुनें", choose:"-- चुनें --",
+      l_area:"जिम का क्षेत्रफल", h_area:"(वर्ग फ़ुट में)", opt:"(वैकल्पिक)",
+      l_addons:"ऐड-ऑन (वैकल्पिक)",
+      ad_dumb:"Dumbbell व Weight Plates सफ़ाई (+₹1,500, 30 dumbbell और 30 plates तक)",
+      ad_mirror:"Mirror / Glass सफ़ाई (₹1.50 प्रति वर्ग फ़ुट)",
+      l_mirror_area:"Mirror / Glass का क्षेत्रफल (वर्ग फ़ुट)",
+      deepNote:"Full Deep Cleaning में Mirror और Glass सफ़ाई पहले से शामिल है।",
+      l_notes:"विशेष ज़रूरत (वैकल्पिक)",
+      l_date:"काम की तारीख चुनें", lg_free:"खाली", lg_booked:"बुक है", lg_sel:"आपकी चुनी", lg_hot:"छूट वाला दिन",
+      offerInfo:"हर तारीख के नीचे लिखा % उस दिन की छूट है। मंगल/गुरु 15%, सोम 10%, शनि/रवि 5%, महीने के आख़िरी शनि/रवि 10%, और 11 से 15 तारीख को 18%। छूट पूरी रकम पर लगती है।",
+      twoDay:"1500 वर्ग फ़ुट से बड़े जिम में काम 2 दिन चलता है, इसलिए चुनी तारीख और अगली तारीख दोनों खाली होनी चाहिए।",
+      calErr:"बुक हो चुकी तारीखें अभी लोड नहीं हो पाईं। फिर भी आप तारीख चुन सकते हैं, हम कॉल पर पक्का करेंगे।",
+      t_title:"ज़रूरी बातें",
+      t1:"फ़ॉर्म भरने पर तारीख <b>24 घंटे</b> के लिए रोकी जाती है। इस बीच हम आपको कॉल करेंगे।",
+      t2:"तारीख पक्की करने के लिए कुल रकम का <b>20% एडवांस</b> UPI QR से देना होगा। 24 घंटे में एडवांस न मिला तो तारीख दूसरे ग्राहक के लिए खुल जाएगी।",
+      t3:"काम से कम <b>8 घंटे पहले</b> रद्द करना हो तो हमें फ़ोन करें। रद्द केवल फ़ोन पर होगा। एडवांस का <b>20% काटकर बाकी वापस</b> होगा (उदाहरण: ₹500 एडवांस पर ₹400 वापस, ₹100 कटेंगे)।",
+      agree:"मैंने ऊपर की शर्तें पढ़ ली हैं और मैं सहमत हूँ।",
+      send:"बुकिंग भेजें", sending:"भेज रहे हैं...", send_lead:"भेजें",
+      ok_title:"बुकिंग मिल गई", ok_ref:"आपका रेफ़रेंस कोड",
+      ok_p1:"आपकी तारीख <b>24 घंटे</b> के लिए रोकी गई है। हम जल्द आपके नंबर पर कॉल करेंगे। कृपया फ़ोन उठाएँ।",
+      ok_p2:"यह रेफ़रेंस कोड कॉल पर बताइएगा। एडवांस मिलने के बाद ही तारीख पक्की मानी जाएगी।",
+      lead_ok_title:"धन्यवाद!", lead_ok_p:"आपकी जानकारी मिल गई। हम जल्द आपके नंबर पर कॉल करेंगे।", again:"नई जानकारी भेजें",
+      footer:"ShinePro360 · कानपुर",
+      amc_title:"मासिक AMC प्लान",
+      amc_note:"दाम 1,000 वर्ग फ़ुट के जिम के लिए प्रति माह हैं। बड़े क्षेत्र का दाम सहमत काम के हिसाब से कॉल पर बताया जाएगा।",
+      l_plan:"प्लान चुनें", per_month:"/माह",
+      pl_e:"महीने में 1 विज़िट। फ़्लोर वॉशिंग, सफ़ाई और पॉलिशिंग।",
+      pl_a:"महीने में 2 विज़िट। Floor Care + Dumbbell व Weight Plates सफ़ाई और डिटेलिंग।",
+      pl_c:"महीने में 2 विज़िट। विज़िट 1: Full Deep Cleaning और पूरे जिम की देखभाल। विज़िट 2: Floor Vacuum सफ़ाई और पॉलिशिंग।",
+      amc_big:"आपका जिम 1,000 वर्ग फ़ुट से बड़ा है। दाम कॉल पर तय होगा।",
+      prod_title:"प्रोडक्ट", prod_note:"जो चाहिए उस पर टिक करें और मात्रा लिखें। दाम और उपलब्धता हम कॉल पर बताएँगे।",
+      qty:"मात्रा", l_addr_opt:"डिलीवरी का पता (वैकल्पिक)",
+      enq_title:"पूछताछ", l_msg:"आपका सवाल या ज़रूरत",
+      months:["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
+      dows:["र","सो","मं","बु","गु","शु","श"],
+      picked:"चुनी हुई तारीख: ", offerWord:"छूट",
+      r_svc:"सेवा", r_add:"ऐड-ऑन", r_total:"कुल", r_disc:"छूट", r_final:"अनुमानित देय रकम", r_adv:"20% एडवांस",
+      r_note:"यह अनुमान है। अंतिम रकम जिम देखकर और कॉल पर पक्की होगी।",
+      e_name:"नाम लिखें।", e_gym:"जिम का नाम लिखें।", e_phone:"सही 10 अंक का मोबाइल नंबर लिखें।",
+      e_city:"शहर लिखें।", e_addr:"पता लिखें।", e_service:"सेवा चुनें।",
+      e_area:"क्षेत्रफल पूरी संख्या में लिखें, जैसे 1200।", e_mirror:"Mirror/Glass का क्षेत्रफल लिखें।",
+      e_date:"तारीख चुनें।", e_taken:"यह तारीख बुक है, दूसरी चुनें।", e_agree:"आगे बढ़ने के लिए सहमति ज़रूरी है।",
+      e_plan:"प्लान चुनें।", e_prod:"कम से कम एक प्रोडक्ट चुनें।", e_msg:"अपना सवाल लिखें।",
+      s_taken:"यह तारीख पहले से बुक है। दूसरी तारीख चुनें।",
+      s_phone:"इस नंबर की एक बुकिंग पहले से पुष्टि का इंतज़ार कर रही है। हम आपको कॉल करेंगे।",
+      s_429:"बहुत ज़्यादा कोशिशें हुईं। कृपया कुछ देर बाद फिर करें।",
+      s_400:"कुछ जानकारी सही नहीं है। कृपया फ़ॉर्म जाँचकर फिर भेजें।",
+      s_500:"जानकारी सेव नहीं हो पाई। कृपया थोड़ी देर बाद फिर कोशिश करें।",
+      s_net:"इंटरनेट की दिक्कत लग रही है। कनेक्शन देखकर फिर कोशिश करें।",
+      prev:"पिछला महीना", next:"अगला महीना"
+    },
+    en:{
+      tagline:"Gym cleaning services in Kanpur. Fill in a form and we will call you.",
+      tab_book:"Book order", tab_amc:"AMC plans", tab_prod:"Products", tab_enq:"Enquiry",
+      l_name:"Your name", l_gym:"Gym name", l_phone:"Mobile number", h_phone:"(10 digits, preferably your WhatsApp number)",
+      l_city:"City", l_addr:"Full gym address", l_service:"Select service", choose:"-- Select --",
+      l_area:"Gym area", h_area:"(in square feet)", opt:"(optional)",
+      l_addons:"Add-ons (optional)",
+      ad_dumb:"Dumbbell & weight plate cleaning (+₹1,500, up to 30 dumbbells and 30 plates)",
+      ad_mirror:"Mirror / glass cleaning (₹1.50 per sq ft)",
+      l_mirror_area:"Mirror / glass area (sq ft)",
+      deepNote:"Mirror and glass cleaning is already included in Full Deep Cleaning.",
+      l_notes:"Special requirements (optional)",
+      l_date:"Choose the work date", lg_free:"Available", lg_booked:"Booked", lg_sel:"Your pick", lg_hot:"Offer day",
+      offerInfo:"The % under each date is that day's discount. Tue/Thu 15%, Mon 10%, Sat/Sun 5%, last Sat/Sun of the month 10%, and 18% on the 11th to 15th. The discount applies to the full amount.",
+      twoDay:"Gyms above 1500 sq ft need 2 days of work, so the chosen date and the next date must both be free.",
+      calErr:"Booked dates could not be loaded right now. You can still pick a date and we will confirm on the call.",
+      t_title:"Important points",
+      t1:"After you submit, your date is held for <b>24 hours</b>. We will call you in that time.",
+      t2:"To confirm the date you must pay a <b>20% advance</b> of the total amount by UPI QR. If the advance is not received within 24 hours, the date opens up for other customers.",
+      t3:"To cancel, call us at least <b>8 hours before</b> the work. Cancellation is only by phone. <b>20% of the advance is deducted</b> and the rest is refunded (example: on a ₹500 advance, ₹400 is refunded and ₹100 is deducted).",
+      agree:"I have read the terms above and I agree.",
+      send:"Submit booking", sending:"Sending...", send_lead:"Send",
+      ok_title:"Booking received", ok_ref:"Your reference code",
+      ok_p1:"Your date is held for <b>24 hours</b>. We will call your number soon. Please pick up the call.",
+      ok_p2:"Please quote this reference code on the call. The date is confirmed only after the advance is received.",
+      lead_ok_title:"Thank you!", lead_ok_p:"We have received your details. We will call your number soon.", again:"Send another",
+      footer:"ShinePro360 · Kanpur",
+      amc_title:"Monthly AMC plans",
+      amc_note:"Prices are per month for a 1,000 sq ft gym. For a larger area the price is confirmed on the call, as per the agreed work.",
+      l_plan:"Choose a plan", per_month:"/month",
+      pl_e:"1 visit per month. Floor washing, cleaning and polishing.",
+      pl_a:"2 visits per month. Floor Care + dumbbell and weight plate cleaning and detailing.",
+      pl_c:"2 visits per month. Visit 1: Full Deep Cleaning and overall gym care. Visit 2: floor vacuum cleaning and polishing.",
+      amc_big:"Your gym is larger than 1,000 sq ft. The price will be confirmed on the call.",
+      prod_title:"Products", prod_note:"Tick what you need and enter the quantity. We will share price and availability on the call.",
+      qty:"Qty", l_addr_opt:"Delivery address (optional)",
+      enq_title:"Enquiry", l_msg:"Your question or requirement",
+      months:["January","February","March","April","May","June","July","August","September","October","November","December"],
+      dows:["S","M","T","W","T","F","S"],
+      picked:"Selected date: ", offerWord:"off",
+      r_svc:"Service", r_add:"Add-ons", r_total:"Total", r_disc:"Discount", r_final:"Estimated payable", r_adv:"20% advance",
+      r_note:"This is an estimate. The final amount is confirmed after inspection and on the call.",
+      e_name:"Enter your name.", e_gym:"Enter the gym name.", e_phone:"Enter a valid 10-digit mobile number.",
+      e_city:"Enter the city.", e_addr:"Enter the address.", e_service:"Select a service.",
+      e_area:"Enter the area as a whole number, e.g. 1200.", e_mirror:"Enter the mirror/glass area.",
+      e_date:"Choose a date.", e_taken:"This date is booked. Choose another.", e_agree:"You must agree to continue.",
+      e_plan:"Choose a plan.", e_prod:"Select at least one product.", e_msg:"Write your question.",
+      s_taken:"This date is already booked. Please choose another date.",
+      s_phone:"A booking for this number is already waiting for confirmation. We will call you.",
+      s_429:"Too many attempts. Please try again after some time.",
+      s_400:"Some details are not valid. Please check the form and submit again.",
+      s_500:"Could not save your details. Please try again in a little while.",
+      s_net:"There seems to be an internet problem. Check your connection and try again.",
+      prev:"Previous month", next:"Next month"
+    }
+  };
+
+  var LANG = "hi";
+  try{var sv0=localStorage.getItem("lang"); if(sv0==="hi"||sv0==="en") LANG=sv0;}catch(e){}
+  function t(k){return T[LANG][k]}
+  var $ = function(id){return document.getElementById(id)};
+  function inr(n){return Math.round(n).toLocaleString("en-IN")}
+
+  // ---------- साझा फ़ील्ड (AMC / प्रोडक्ट / पूछताछ) ----------
+  document.querySelectorAll(".common").forEach(function(c){
+    var p=c.getAttribute("data-p");
+    c.innerHTML =
+      '<div style="display:flex;flex-direction:column;gap:18px">'+
+      '<div><label for="'+p+'_name" data-i18n="l_name">x</label><input type="text" id="'+p+'_name" maxlength="100" autocomplete="name"><div class="err" data-for="'+p+'_name"></div></div>'+
+      '<div><label for="'+p+'_phone"><span data-i18n="l_phone">x</span> <span class="hint" data-i18n="h_phone">x</span></label><input type="tel" id="'+p+'_phone" inputmode="numeric" maxlength="14" autocomplete="tel"><div class="err" data-for="'+p+'_phone"></div></div>'+
+      '<div><label for="'+p+'_gym"><span data-i18n="l_gym">x</span> <span class="hint" data-i18n="opt">x</span></label><input type="text" id="'+p+'_gym" maxlength="150"></div>'+
+      '<div><label for="'+p+'_city"><span data-i18n="l_city">x</span> <span class="hint" data-i18n="opt">x</span></label><input type="text" id="'+p+'_city" maxlength="80" value="Kanpur"></div>'+
+      '<div class="hp" aria-hidden="true"><label for="'+p+'_website">Website</label><input type="text" id="'+p+'_website" tabindex="-1" autocomplete="off"></div>'+
+      '</div>';
+  });
+  PRODUCTS.forEach(function(name,i){
+    var l=document.createElement("label"); l.className="prod"; l.setAttribute("for","pr"+i);
+    l.innerHTML='<input type="checkbox" id="pr'+i+'"><span></span><input type="number" id="pq'+i+'" inputmode="numeric" min="1" max="1000" value="1" aria-label="Qty" disabled>';
+    l.querySelector("span").textContent=name;
+    $("prodList").appendChild(l);
+    $("pr"+i).addEventListener("change",function(){$("pq"+i).disabled=!this.checked; setErr("prod_items","")});
+  });
+
+  // ---------- तारीख़ें ----------
+  function istToday(){
+    var p = new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+    var a = p.split("-"); return new Date(Date.UTC(+a[0],+a[1]-1,+a[2]));
+  }
+  function iso(d){return d.toISOString().slice(0,10)}
+  function addDays(d,n){return new Date(d.getTime()+n*86400000)}
+  var today = istToday(), minDate = addDays(today,1), maxDate = addDays(today,120);
+  var booked = {}, selected = "";
+  var view = new Date(Date.UTC(minDate.getUTCFullYear(),minDate.getUTCMonth(),1));
+
+  function needsTwoDays(){ return !!$("service").value && (+$("area_sqft").value)>1500; }
+  function isFree(s){
+    if(booked[s]) return false;
+    if(needsTwoDays()){ var n = iso(addDays(new Date(s+"T00:00:00Z"),1)); if(booked[n]) return false; }
+    return true;
+  }
+  function fmt(s){var a=s.split("-");return +a[2]+" "+t("months")[+a[1]-1]+" "+a[0]}
+
+  function render(){
+    var y = view.getUTCFullYear(), m = view.getUTCMonth();
+    $("monthName").textContent = t("months")[m]+" "+y;
+    $("dows").innerHTML = t("dows").map(function(d){return '<div class="dow">'+d+'</div>'}).join("");
+    var first = new Date(Date.UTC(y,m,1)).getUTCDay();
+    var count = new Date(Date.UTC(y,m+1,0)).getUTCDate();
+    var html = "";
+    for(var i=0;i<first;i++) html += '<div class="day blank"></div>';
+    for(var d=1; d<=count; d++){
+      var dt = new Date(Date.UTC(y,m,d)), s = iso(dt), cls = "day", dis = false, badge = "";
+      if(dt<minDate || dt>maxDate){cls+=" off"; dis=true}
+      else if(!isFree(s)){cls+=" booked"; dis=true}
+      else {
+        var p = offerPct(s);
+        if(p>0){ badge='<small>'+p+'%</small>'; if(p>=15) cls+=" hot"; }
+        if(s===selected) cls+=" sel";
+      }
+      html += '<button type="button" class="'+cls+'" data-d="'+s+'"'+(dis?' disabled':'')+'>'+d+badge+'</button>';
+    }
+    $("days").innerHTML = html;
+    $("prev").disabled = (y===minDate.getUTCFullYear() && m<=minDate.getUTCMonth()) || (y<minDate.getUTCFullYear());
+    var maxV = new Date(Date.UTC(maxDate.getUTCFullYear(),maxDate.getUTCMonth(),1));
+    $("next").disabled = view>=maxV;
+    var po = offerPct(selected);
+    $("picked").textContent = selected ? t("picked")+fmt(selected)+(po?" · "+po+"% "+t("offerWord"):"") : "";
+    $("twoDay").hidden = !needsTwoDays();
+  }
+
+  // ---------- रकम का अनुमान ----------
+  function calcQuote(){
+    var sv=$("service").value, a=+$("area_sqft").value;
+    if(!sv || !(a>0)) return null;
+    var base=a*RATES[sv], add=0;
+    if($("ad_dumb").checked) add+=DUMBBELL_PRICE;
+    if(sv==="Floor Care Service" && $("ad_mirror").checked){var m=+$("mirror_sqft").value; if(m>0) add+=m*MIRROR_RATE;}
+    var total=base+add, pct=offerPct(selected), fin=Math.round(total*(100-pct)/100);
+    return {base:base,add:add,total:total,pct:pct,fin:fin,adv:Math.round(fin*0.2)};
+  }
+  function updateEst(){
+    var q=calcQuote(), box=$("est");
+    if(!q){box.hidden=true;return}
+    var h='<div class="r"><span>'+t("r_svc")+'</span><b>₹'+inr(q.base)+'</b></div>';
+    if(q.add>0) h+='<div class="r"><span>'+t("r_add")+'</span><b>₹'+inr(q.add)+'</b></div>';
+    if(q.pct>0){
+      h+='<div class="r"><span>'+t("r_total")+'</span><b>₹'+inr(q.total)+'</b></div>';
+      h+='<div class="r g"><span>'+t("r_disc")+' ('+q.pct+'%)</span><b>− ₹'+inr(q.total-q.fin)+'</b></div>';
+    }
+    h+='<div class="r f"><span>'+t("r_final")+'</span><b>₹'+inr(q.fin)+'</b></div>';
+    h+='<div class="r"><span>'+t("r_adv")+'</span><b>₹'+inr(q.adv)+'</b></div>';
+    h+='<div class="note" style="margin-top:6px">'+t("r_note")+'</div>';
+    box.innerHTML=h; box.hidden=false;
+  }
+  function refresh(){ updateEst(); if(selected && !isFree(selected)) selected=""; render(); }
+
+  function updateService(){
+    var v=$("service").value;
+    $("areaBox").hidden=!v; $("addons").hidden=!v;
+    $("mirrorBox").hidden = v!=="Floor Care Service";
+    $("deepNote").hidden = v!=="Full Deep Cleaning";
+    if(v!=="Floor Care Service"){$("ad_mirror").checked=false;$("mirrorArea").hidden=true}
+    refresh();
+  }
+  $("service").addEventListener("change",updateService);
+  $("area_sqft").addEventListener("input",refresh);
+  $("ad_dumb").addEventListener("change",refresh);
+  $("ad_mirror").addEventListener("change",function(){$("mirrorArea").hidden=!this.checked; refresh()});
+  $("mirror_sqft").addEventListener("input",updateEst);
+
+  $("days").addEventListener("click",function(e){
+    var b=e.target.closest("button.day"); if(!b||b.disabled) return;
+    selected=b.getAttribute("data-d"); setErr("preferred_date",""); updateEst(); render();
+  });
+  $("prev").onclick=function(){view=new Date(Date.UTC(view.getUTCFullYear(),view.getUTCMonth()-1,1)); render()};
+  $("next").onclick=function(){view=new Date(Date.UTC(view.getUTCFullYear(),view.getUTCMonth()+1,1)); render()};
+
+  function loadBooked(){
+    fetch(API).then(function(r){return r.json()}).then(function(j){
+      if(!j||!j.ok) throw 0;
+      booked={}; (j.booked_days||[]).forEach(function(d){booked[String(d).slice(0,10)]=1});
+      if(selected && !isFree(selected)) selected="";
+      $("calErr").hidden=true; render();
+    }).catch(function(){$("calErr").hidden=false});
+  }
+
+  // ---------- त्रुटि संदेश ----------
+  var lastErr={}, lastTop={};
+  function setErr(k,key){
+    var el=document.querySelector('.err[data-for="'+k+'"]');
+    if(key) lastErr[k]=key; else delete lastErr[k];
+    if(el) el.textContent = key ? t(key) : "";
+  }
+  function clearErrs(scope){
+    scope.querySelectorAll(".err").forEach(function(e){
+      var k=e.getAttribute("data-for"); delete lastErr[k]; e.textContent="";
+    });
+  }
+  function topErr(id,key,quiet){
+    lastTop[id]=key; var b=$(id); b.textContent=t(key); b.hidden=false;
+    if(!quiet) b.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  function hideTop(id){delete lastTop[id]; $(id).hidden=true}
+  function normPhone(v){var d=String(v).replace(/\D/g,""); if(d.length===12&&d.indexOf("91")===0) d=d.slice(2); return d}
+  function okPhone(v){return /^[6-9]\d{9}$/.test(normPhone(v))}
+  function firstErr(scope){var f=scope.querySelector(".err:not(:empty)"); if(f) f.scrollIntoView({behavior:"smooth",block:"center"})}
+
+  function post(body,done){
+    fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {}}).then(function(j){return {s:r.status,j:j}})})
+      .then(done)
+      .catch(function(){done({s:0,j:{}})});
+  }
+  function failKey(o){
+    if(o.s===409){var m=(o.j&&o.j.error)||""; return m.indexOf("phone number")>=0?"s_phone":"s_taken"}
+    if(o.s===429) return "s_429";
+    if(o.s===400) return "s_400";
+    if(o.s===0) return "s_net";
+    return "s_500";
+  }
+
+  // ---------- बुकिंग भेजना ----------
+  var BUSY=false;
+  function validateBook(){
+    clearErrs($("form")); hideTop("topErr"); var ok=true;
+    function bad(k,m){setErr(k,m); ok=false}
+    if(!$("customer_name").value.trim()) bad("customer_name","e_name");
+    if(!$("gym_name").value.trim()) bad("gym_name","e_gym");
+    if(!okPhone($("phone").value)) bad("phone","e_phone");
+    if(!$("city").value.trim()) bad("city","e_city");
+    if(!$("address").value.trim()) bad("address","e_addr");
+    var sv=$("service").value;
+    if(!sv) bad("service","e_service");
+    else {
+      var a=$("area_sqft").value;
+      if(!/^\d+$/.test(a)||+a<1||+a>1000000) bad("area_sqft","e_area");
+      if(sv==="Floor Care Service" && $("ad_mirror").checked){
+        var mm=$("mirror_sqft").value; if(!/^\d+$/.test(mm)||+mm<1||+mm>100000) bad("mirror_sqft","e_mirror");
+      }
+    }
+    if(!selected) bad("preferred_date","e_date"); else if(!isFree(selected)) bad("preferred_date","e_taken");
+    if(!$("agree").checked) bad("agree","e_agree");
+    return ok;
+  }
+  $("form").addEventListener("submit",function(e){
+    e.preventDefault(); if(BUSY) return;
+    if(!validateBook()){firstErr($("form"));return}
+    var sv=$("service").value;
+    var body={
+      customer_name:$("customer_name").value.trim(), gym_name:$("gym_name").value.trim(),
+      phone:normPhone($("phone").value), city:$("city").value.trim(), address:$("address").value.trim(),
+      service:sv, area_sqft:+$("area_sqft").value, preferred_date:selected, website:$("website").value,
+      notes:$("notes").value.trim(),
+      addons:{dumbbell:$("ad_dumb").checked, mirror_sqft:(sv==="Floor Care Service"&&$("ad_mirror").checked)?+$("mirror_sqft").value:0}
+    };
+    BUSY=true; $("submit").disabled=true; $("submit").textContent=t("sending");
+    post(body,function(o){
+      BUSY=false; $("submit").disabled=false; $("submit").textContent=t("send");
+      if(o.s===201&&o.j&&o.j.ok){
+        $("refCode").textContent=o.j.reference||"OK"; $("form").hidden=true; $("success").hidden=false;
+        window.scrollTo({top:0,behavior:"smooth"});
+      } else { topErr("topErr",failKey(o)); if(o.s===409) loadBooked(); }
+    });
+  });
+
+  // ---------- AMC / प्रोडक्ट / पूछताछ ----------
+  var LEADS={
+    amc:{form:"amcForm",p:"amc",top:"amc_top",
+      check:function(){
+        var ok=true;
+        if(!document.querySelector('input[name=plan]:checked')){setErr("amc_plan","e_plan");ok=false}
+        var a=$("amc_area").value; if(!/^\d+$/.test(a)||+a<1||+a>1000000){setErr("amc_area","e_area");ok=false}
+        return ok;
+      },
+      body:function(b){
+        b.plan=document.querySelector('input[name=plan]:checked').value;
+        b.area_sqft=+$("amc_area").value; b.details=$("amc_details").value.trim();
+      }},
+    prod:{form:"prodForm",p:"prod",top:"prod_top",
+      check:function(){
+        var any=PRODUCTS.some(function(_,i){return $("pr"+i).checked});
+        if(!any){setErr("prod_items","e_prod");return false}
+        var ok=true;
+        PRODUCTS.forEach(function(_,i){ if($("pr"+i).checked){var q=$("pq"+i).value; if(!/^\d+$/.test(q)||+q<1||+q>1000){ok=false;$("pq"+i).focus()}}});
+        if(!ok) setErr("prod_items","e_prod");
+        return ok;
+      },
+      body:function(b){
+        b.items=[]; PRODUCTS.forEach(function(n,i){ if($("pr"+i).checked) b.items.push({name:n,qty:+$("pq"+i).value}) });
+        b.details=$("prod_details").value.trim();
+      }},
+    enq:{form:"enqForm",p:"enq",top:"enq_top",
+      check:function(){ if(!$("enq_details").value.trim()){setErr("enq_details","e_msg");return false} return true },
+      body:function(b){ b.details=$("enq_details").value.trim() }}
+  };
+  var LBUSY=false;
+  Object.keys(LEADS).forEach(function(k){
+    var L=LEADS[k], f=$(L.form);
+    f.addEventListener("submit",function(e){
+      e.preventDefault(); if(LBUSY) return;
+      clearErrs(f); hideTop(L.top);
+      var ok=true;
+      if(!$(L.p+"_name").value.trim()){setErr(L.p+"_name","e_name");ok=false}
+      if(!okPhone($(L.p+"_phone").value)){setErr(L.p+"_phone","e_phone");ok=false}
+      if(!L.check()) ok=false;
+      if(!ok){firstErr(f);return}
+      var body={type:f.getAttribute("data-kind"),customer_name:$(L.p+"_name").value.trim(),phone:normPhone($(L.p+"_phone").value),
+        gym_name:$(L.p+"_gym").value.trim(),city:$(L.p+"_city").value.trim(),website:$(L.p+"_website").value};
+      L.body(body);
+      var btn=f.querySelector("button[type=submit]"); LBUSY=true; btn.disabled=true; btn.textContent=t("sending");
+      post(body,function(o){
+        LBUSY=false; btn.disabled=false; btn.textContent=t("send_lead");
+        if(o.s===201&&o.j&&o.j.ok){
+          $("leadRef").textContent=o.j.reference||"OK";
+          f.hidden=true; f.parentNode.appendChild($("leadOk")); $("leadOk").hidden=false; $("leadOk").setAttribute("data-from",L.form);
+          window.scrollTo({top:0,behavior:"smooth"});
+        } else topErr(L.top,failKey(o));
+      });
+    });
+  });
+  $("amcForm").addEventListener("input",function(e){
+    if(e.target.name==="plan") setErr("amc_plan","");
+    var a=+$("amc_area").value, n=$("amc_est");
+    if(a>1000){n.textContent=t("amc_big"); n.hidden=false; lastAmcBig=true} else {n.hidden=true; lastAmcBig=false}
+  });
+  var lastAmcBig=false;
+  $("leadAgain").onclick=function(){
+    var id=$("leadOk").getAttribute("data-from"); var f=$(id);
+    f.reset(); f.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=false});
+    PRODUCTS.forEach(function(_,i){$("pq"+i).disabled=true});
+    ["amc","prod","enq"].forEach(function(p){ if($(p+"_city")&&f.contains($(p+"_city"))) $(p+"_city").value="Kanpur" });
+    $("amc_est").hidden=true;
+    f.hidden=false; $("leadOk").hidden=true;
+  };
+
+  // ---------- टैब ----------
+  var TABS=["book","amc","products","enquiry"];
+  function showTab(name){
+    if(TABS.indexOf(name)<0) name="book";
+    TABS.forEach(function(n){ $("tab-"+n).hidden = n!==name });
+    document.querySelectorAll(".tabs button").forEach(function(b){b.className = b.getAttribute("data-tab")===name?"on":""; b.setAttribute("aria-pressed",b.getAttribute("data-tab")===name)});
+    var lead=$("leadOk");
+    if(!lead.hidden && !$("tab-"+name).contains(lead)){
+      lead.hidden=true; var ff=$(lead.getAttribute("data-from")); if(ff) ff.hidden=false;
+    }
+  }
+  document.querySelectorAll(".tabs button").forEach(function(b){
+    b.addEventListener("click",function(){ var n=b.getAttribute("data-tab"); if(location.hash!=="#"+n) location.hash=n; else showTab(n) });
+  });
+  window.addEventListener("hashchange",function(){showTab(location.hash.replace("#",""))});
+
+  // ---------- भाषा ----------
+  function applyLang(){
+    document.documentElement.lang=LANG;
+    document.querySelectorAll("[data-i18n]").forEach(function(e){e.textContent=t(e.getAttribute("data-i18n"))});
+    document.querySelectorAll("[data-i18n-html]").forEach(function(e){e.innerHTML=t(e.getAttribute("data-i18n-html"))});
+    $("lhi").className=LANG==="hi"?"on":""; $("len").className=LANG==="en"?"on":"";
+    $("prev").setAttribute("aria-label",t("prev")); $("next").setAttribute("aria-label",t("next"));
+    if(!BUSY) $("submit").textContent=t("send");
+    document.querySelectorAll('#amcForm button[type=submit],#prodForm button[type=submit],#enqForm button[type=submit]').forEach(function(b){ if(!LBUSY) b.textContent=t("send_lead") });
+    updateEst(); render();
+    Object.keys(lastErr).forEach(function(k){setErr(k,lastErr[k])});
+    Object.keys(lastTop).forEach(function(id){topErr(id,lastTop[id],true)});
+    var n=$("amc_est"); if(!n.hidden) n.textContent=t("amc_big");
+  }
+  function setLang(l){LANG=l; try{localStorage.setItem("lang",l)}catch(e){} applyLang()}
+  $("lhi").onclick=function(){setLang("hi")};
+  $("len").onclick=function(){setLang("en")};
+
+  applyLang(); loadBooked(); showTab(location.hash.replace("#",""));
+})();
+</script>
+</body>
+</html>
