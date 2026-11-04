@@ -1,184 +1,326 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
 <title>ShinePro360 एडमिन</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f1a22;--card:#16262f;--line:#233844;--text:#e8f1f5;--mute:#8fa7b3;--teal:#3db5c5;--green:#5fd4a0;--amber:#f0b455;--red:#ef7a7a}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif;line-height:1.5;padding:16px;max-width:720px;margin-inline:auto}
-h1{font-size:1.4rem;margin:0}
-h1 b{color:var(--teal)}
-input,button{font:inherit}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);margin-bottom:10px}
-button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:600;background:var(--teal);color:#06232a}
-button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-button.ok{background:var(--green)}
-button.bad{background:transparent;color:var(--red);border:1px solid var(--red)}
-button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px}
-.tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0}
-.tabs button{white-space:nowrap}
-.tabs button:not(.on){background:transparent;color:var(--mute);border:1px solid var(--line)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-.row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.name{font-weight:700;font-size:1.05rem}
-.code{font-family:ui-monospace,monospace;color:var(--teal);letter-spacing:.08em}
-.meta{color:var(--mute);font-size:.9rem;margin:2px 0}
-.badge{font-size:.8rem;padding:2px 10px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
-.pending{color:var(--amber)}.confirmed{color:var(--green)}.cancelled{color:var(--red)}
-.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.acts a{display:inline-block;text-decoration:none;padding:10px 14px;border-radius:10px;background:var(--teal);color:#06232a;font-weight:600}
-.msg{color:var(--red);min-height:1.4em}
-.empty{color:var(--mute);text-align:center;padding:30px 0}
-.hide{display:none}
+:root{--bg:#f3f6f7;--card:#fff;--ink:#12262e;--muted:#5b707a;--line:#d5dfe3;--brand:#0b6b75;--brand-ink:#fff;
+--ok:#17794a;--bad:#b3261e;--warn:#9a6700;--pend:#f2b134}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1a1f;--card:#162830;--ink:#e8f0f2;--muted:#9db1b9;--line:#2b424c;
+--brand:#3fb5c2;--brand-ink:#06242a;--ok:#5fd39b;--bad:#ff8a80;--warn:#f2b134;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Hind',system-ui,sans-serif;font-size:16px;line-height:1.45;
+padding:0 max(14px,env(safe-area-inset-left,0px)) 40px max(14px,env(safe-area-inset-left,0px))}
+.wrap{max-width:560px;margin:0 auto}
+h1{font-size:22px;margin:18px 0 4px}
+.muted{color:var(--muted);font-size:14px}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;min-height:46px}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;min-height:46px;padding:0 14px;cursor:pointer;background:var(--brand);color:var(--brand-ink)}
+button.sec{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+button.bad{background:var(--bad);color:#fff}
+button.ok{background:var(--ok);color:#fff}
+button:disabled{opacity:.55}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chips button{min-height:38px;padding:0 12px;font-size:14px}
+.chips button.on{background:var(--brand);color:var(--brand-ink)}
+.chips button:not(.on){background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.badge{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600;border:1.5px solid currentColor}
+.s-pending{color:var(--warn)}.s-confirmed{color:var(--ok)}.s-cancelled,.s-expired{color:var(--bad)}
+.k{display:grid;grid-template-columns:110px 1fr;gap:2px 8px;font-size:15px}
+.k b{color:var(--muted);font-weight:500}
+a{color:var(--brand)}
+.msg{font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid var(--line)}
+.msg.bad{color:var(--bad);border-color:var(--bad)}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
+<div class="wrap">
+<h1>ShinePro360 एडमिन</h1>
+<div class="muted">सिर्फ़ मालिक के लिए</div>
+<div id="note" class="msg" hidden></div>
 
-<section id="login">
-  <h1>Shine<b>Pro360</b> एडमिन</h1>
-  <p class="meta">अपना ईमेल और पासवर्ड डालकर लॉगिन करें।</p>
-  <input id="em" type="email" placeholder="ईमेल" autocomplete="username">
-  <input id="pw" type="password" placeholder="पासवर्ड" autocomplete="current-password">
-  <button id="btnLogin">लॉगिन करें</button>
-  <p class="msg" id="loginMsg"></p>
-</section>
+<div id="setup" class="box" hidden>
+  <b>पहली बार: Supabase की publishable key डालें</b>
+  <div class="muted">Supabase → Settings → API Keys में "Publishable key" (sb_publishable_ से शुरू) कॉपी करें। secret key कभी न डालें।</div>
+  <input id="pk" type="text" autocomplete="off" placeholder="sb_publishable_...">
+  <button id="savePk">सेव करें</button>
+</div>
 
-<section id="app" class="hide">
-  <div class="top">
-    <h1>बुकिंग</h1>
-    <div>
-      <button class="ghost" id="btnRefresh">रीफ़्रेश</button>
-      <button class="ghost" id="btnOut">लॉगआउट</button>
-    </div>
+<div id="login" class="box" hidden>
+  <b>लॉगिन</b>
+  <input id="em" type="email" autocomplete="username" placeholder="ईमेल">
+  <input id="pw" type="password" autocomplete="current-password" placeholder="पासवर्ड">
+  <button id="doLogin">लॉगिन</button>
+  <button class="sec" id="resetKey" type="button">key बदलें</button>
+</div>
+
+<div id="app" hidden>
+  <div class="top" style="margin-top:12px">
+    <button class="sec" id="reload">रिफ़्रेश</button>
+    <button class="sec" id="logout">लॉगआउट</button>
   </div>
-  <input id="q" type="search" placeholder="नाम, फ़ोन, जिम या रेफ़रेंस कोड से खोजें">
-  <div class="tabs" id="tabs"></div>
-  <p class="msg" id="appMsg"></p>
+  <div class="chips" id="modes" style="margin-top:8px"></div>
+  <div class="chips" id="chips"></div>
   <div id="list"></div>
-</section>
+</div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-// ====== यहाँ अपनी Supabase की दो चीज़ें डालें (Project Settings → API) ======
-const SUPABASE_URL = "https://nohnzyyaawarvhrmaota.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_HYrszGzg14QCgw3aqqyrHQ_sKjgbvh_"; // सिर्फ़ anon/public key, service_role कभी नहीं
-// ================================================================================
+(function(){
+var URL_ = "https://nohnzyyaawarvhrmaota.supabase.co";
+var $ = function(i){return document.getElementById(i)};
+var sb = null, all = [], filter = "pending", mode = "book", leads = [], lfilter = "new";
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const $ = id => document.getElementById(id);
-const LABEL = {all:"सभी", pending:"इंतज़ार में", confirmed:"पक्की", cancelled:"रद्द"};
-let rows = [], daysMap = {}, filter = "pending";
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function note(t,bad){var n=$("note");n.textContent=t;n.className="msg"+(bad?" bad":"");n.hidden=!t}
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function fmtDate(s){if(!s)return"-";var a=String(s).slice(0,10).split("-");return a[2]+"/"+a[1]+"/"+a[0]}
+function fmtDT(s){if(!s)return"-";return new Date(s).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}
+function inr(n){return "₹"+Math.round(Number(n)).toLocaleString("en-IN")}
 
-function el(tag, cls, text){
-  const e = document.createElement(tag);
-  if(cls) e.className = cls;
-  if(text !== undefined) e.textContent = text;
-  return e;
-}
-const refCode = b => String(b.ref_code || b.reference_code || b.id).replace(/-/g,"").slice(0,8).toUpperCase();
-const fmtDate = d => d ? new Date(d).toLocaleDateString("hi-IN",{day:"numeric",month:"short",year:"numeric"}) : "—";
-const fmtTime = d => d ? new Date(d).toLocaleString("hi-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}) : "";
-
-async function showApp(){
-  $("login").classList.add("hide");
-  $("app").classList.remove("hide");
-  await load();
-}
-
-async function init(){
-  const { data:{ session } } = await db.auth.getSession();
-  if(session) showApp();
-}
-
-$("btnLogin").onclick = async () => {
-  $("loginMsg").textContent = "";
-  const { error } = await db.auth.signInWithPassword({ email:$("em").value.trim(), password:$("pw").value });
-  if(error){ $("loginMsg").textContent = "लॉगिन नहीं हुआ (" + error.message + ")"; return; }
-  showApp();
-};
-$("btnOut").onclick = async () => { await db.auth.signOut(); location.reload(); };
-$("btnRefresh").onclick = load;
-$("q").oninput = render;
-
-async function load(){
-  $("appMsg").textContent = "";
-  const { data, error } = await db.from("Booking").select("*").order("created_at",{ascending:false});
-  if(error){ $("appMsg").textContent = "बुकिंग नहीं मिलीं। जाँचें कि यह अकाउंट एडमिन है: " + error.message; return; }
-  rows = data || [];
-  daysMap = {};
-  const r = await db.from("booking_days").select("booking_id, day");
-  if(!r.error && r.data) r.data.forEach(d => (daysMap[d.booking_id] = daysMap[d.booking_id] || []).push(d.day));
-  render();
-}
-
-function renderTabs(){
-  const t = $("tabs"); t.replaceChildren();
-  Object.keys(LABEL).forEach(k => {
-    const n = k === "all" ? rows.length : rows.filter(b => b.status === k).length;
-    const b = el("button", k === filter ? "on" : "", LABEL[k] + " (" + n + ")");
-    b.onclick = () => { filter = k; render(); };
-    t.appendChild(b);
+function start(){
+  var pk = store("pk");
+  if(!pk){ $("setup").hidden=false; return }
+  $("setup").hidden=true;
+  sb = window.supabase.createClient(URL_, pk);
+  sb.auth.getSession().then(function(r){
+    if(r.data && r.data.session) enter(); else {$("login").hidden=false; $("app").hidden=true}
   });
 }
+$("resetKey").onclick=function(){try{localStorage.removeItem("pk")}catch(e){} $("login").hidden=true; $("pk").value=""; note(""); start()};
+$("savePk").onclick=function(){var v=$("pk").value.trim(); if(v.length<20){note("key सही नहीं लग रही।",1);return} store("pk",v); note(""); start()};
 
-function render(){
-  renderTabs();
-  const q = $("q").value.trim().toLowerCase();
-  const list = $("list"); list.replaceChildren();
-  const shown = rows.filter(b => (filter === "all" || b.status === filter) &&
-    (!q || [b.customer_name, b.phone, b.gym_name, refCode(b)].join(" ").toLowerCase().includes(q)));
-  if(!shown.length){ list.appendChild(el("p","empty","कोई बुकिंग नहीं मिली।")); return; }
-  shown.forEach(b => list.appendChild(card(b)));
+$("doLogin").onclick=function(){
+  var b=$("doLogin"); b.disabled=true; note("");
+  sb.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value}).then(function(r){
+    b.disabled=false;
+    if(r.error){
+      var m=String(r.error.message||"");
+      var why = /api key|apikey|jwt|invalid key/i.test(m) ? "चाबी (key) गलत है। नीचे 'key बदलें' दबाकर सही Publishable key डालें।"
+              : /invalid login|credentials/i.test(m) ? "ईमेल या पासवर्ड गलत है।"
+              : /confirm/i.test(m) ? "ईमेल की पुष्टि नहीं हुई है।"
+              : "कारण: "+m;
+      note("लॉगिन नहीं हुआ। "+why,1);return}
+    $("pw").value=""; enter();
+  });
+};
+$("logout").onclick=function(){sb.auth.signOut().then(function(){$("app").hidden=true;$("login").hidden=false})};
+$("reload").onclick=load;
+
+function enter(){$("login").hidden=true;$("app").hidden=false;load()}
+
+var FILTERS=[["pending","इंतज़ार में"],["confirmed","पक्की"],["cancelled","रद्द"],["expired","समय खत्म"],["all","सब"]];
+var LFILTERS=[["new","नई"],["done","हो गया"],["all","सब"]];
+function chips(){
+  var m=$("modes"); m.innerHTML="";
+  [["book","बुकिंग"],["leads","पूछताछ / AMC / प्रोडक्ट"],["offers","ऑफ़र"]].forEach(function(x){
+    var b=el("button",mode===x[0]?"on":"",x[1]); b.onclick=function(){mode=x[0];chips();draw()}; m.appendChild(b);
+  });
+  var c=$("chips"); c.innerHTML="";
+  if(mode==="offers"){
+  } else if(mode==="book"){
+    FILTERS.forEach(function(f){
+      var b=el("button",filter===f[0]?"on":"",f[1]); b.onclick=function(){filter=f[0];chips();draw()}; c.appendChild(b);
+    });
+  } else {
+    LFILTERS.forEach(function(f){
+      var b=el("button",lfilter===f[0]?"on":"",f[1]); b.onclick=function(){lfilter=f[0];chips();draw()}; c.appendChild(b);
+    });
+  }
 }
 
-function card(b){
-  const c = el("div","card");
-  const top = el("div","row");
-  const left = el("div");
-  left.appendChild(el("div","name", b.customer_name || "—"));
-  left.appendChild(el("div","code", refCode(b)));
-  top.appendChild(left);
-  top.appendChild(el("span","badge " + b.status, LABEL[b.status] || b.status));
+function load(){
+  note("लोड हो रहा है...");
+  sb.from("Booking").select("id,created_at,customer_name,gym_name,phone,city,address,service,area_sqft,preferred_date,status,advance_paid,advance_amount,hold_expires_at,refund_amount,notes,quoted_amount,discount_pct")
+    .order("preferred_date",{ascending:true}).then(function(r){
+      if(r.error){note("डेटा नहीं मिला। (क्या यह एडमिन खाता है?)",1);return}
+      note(""); all=r.data||[];
+      sb.from("enquiries").select("id,created_at,kind,customer_name,phone,gym_name,city,area_sqft,details,status")
+        .order("created_at",{ascending:false}).then(function(r2){
+          leads = r2.error ? [] : (r2.data||[]);
+          if(r2.error) note("पूछताछ वाली तालिका अभी नहीं मिली (SQL चलाई है?)",1);
+          chips(); draw();
+        });
+    });
+}
+
+function estimate(b){
+  if(b.quoted_amount!=null){
+    var p=b.discount_pct||0;
+    return inr(b.quoted_amount)+(p?" ("+p+"% छूट के बाद)":"")+" (20% = "+inr(b.quoted_amount*0.2)+")";
+  }
+  return "कॉल पर तय करें"+(b.area_sqft?" · "+b.area_sqft+" sqft":"");
+}
+
+var KIND={enquiry:"पूछताछ",amc:"AMC प्लान",product:"प्रोडक्ट"};
+function leadCard(b){
+  var c=el("div","box"), top=el("div","top");
+  top.appendChild(el("b","",(KIND[b.kind]||b.kind)+" · "+String(b.id).slice(0,8).toUpperCase()));
+  top.appendChild(el("span","badge "+(b.status==="done"?"s-confirmed":"s-pending"),b.status==="done"?"हो गया":"नई"));
   c.appendChild(top);
-
-  c.appendChild(el("div","meta", (b.gym_name || "—") + (b.city ? ", " + b.city : "")));
-  if(b.address) c.appendChild(el("div","meta", b.address));
-  c.appendChild(el("div","meta", (b.service || "—") + " · " + (b.area_sqft || "?") + " sqft"));
-  const days = daysMap[b.id];
-  c.appendChild(el("div","meta", "तारीख: " + (days && days.length ? days.map(fmtDate).join(", ") : fmtDate(b.preferred_date))));
-  if(b.status === "pending" && b.hold_expires_at)
-    c.appendChild(el("div","meta pending", "होल्ड खत्म: " + fmtTime(b.hold_expires_at)));
-
-  const acts = el("div","acts");
-  const call = el("a","", "कॉल करें: " + b.phone);
-  call.href = "tel:" + String(b.phone).replace(/[^0-9+]/g,"");
-  acts.appendChild(call);
-  if(b.status === "pending"){
-    const ok = el("button","ok","एडवांस मिला, पक्की करें");
-    ok.onclick = () => setStatus(b, "confirmed", "एडवांस मिल गया? बुकिंग पक्की करें।");
-    acts.appendChild(ok);
+  var g=el("div","k");
+  kv(g,"नाम",b.customer_name);
+  var ph=kv(g,"फ़ोन","");
+  var a1=el("a","",b.phone); a1.href="tel:+91"+b.phone; ph.appendChild(a1); ph.appendChild(document.createTextNode("  "));
+  var a2=el("a","","WhatsApp"); a2.href="https://wa.me/91"+b.phone; a2.target="_blank"; a2.rel="noopener"; ph.appendChild(a2);
+  if(b.gym_name) kv(g,"जिम",b.gym_name);
+  if(b.city) kv(g,"शहर",b.city);
+  if(b.area_sqft) kv(g,"क्षेत्रफल",b.area_sqft+" sqft");
+  kv(g,"समय",fmtDT(b.created_at));
+  kv(g,"विवरण",b.details||"-").style.whiteSpace="pre-line";
+  c.appendChild(g);
+  var btn=el("button",b.status==="done"?"sec":"ok",b.status==="done"?"फिर से नई करें":"कॉल हो गई · हो गया");
+  btn.onclick=function(){
+    btn.disabled=true;
+    sb.from("enquiries").update({status:b.status==="done"?"new":"done"}).eq("id",b.id).select("id").then(function(r){
+      btn.disabled=false;
+      if(r.error||!r.data||!r.data.length){note("सेव नहीं हुआ।",1);return}
+      load();
+    });
+  };
+  c.appendChild(btn);
+  return c;
+}
+var WDN=["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"];
+function drawOffers(){
+  var box=$("list"); box.innerHTML="";
+  var c=el("div","box");
+  c.appendChild(el("b","","ऑफ़र की सेटिंग"));
+  c.appendChild(el("div","muted","यहाँ बदलकर सेव करने पर ग्राहक के पेज पर नया % तुरंत दिखेगा। छूट की सीमा 0 से 20 के बीच है।"));
+  c.appendChild(el("div","muted","खाली छोड़ें या 0 लिखें तो उस दिन ख़ास छूट नहीं होगी।"));
+  var st=el("div","msg","लोड हो रहा है..."); c.appendChild(st);
+  box.appendChild(c);
+  sb.from("site_settings").select("value").eq("key","offers").maybeSingle().then(function(r){
+    if(r.error){st.className="msg bad";st.textContent="सेटिंग नहीं मिली। (क्या setup SQL चलाई है?)";return}
+    var v=(r.data&&r.data.value)||{base_pct:5,base_until:"",weekday_pct:{}};
+    st.remove();
+    var f=el("div"); f.style.cssText="display:flex;flex-direction:column;gap:10px";
+    function field(label,inp){var w=el("div");w.appendChild(el("div","muted",label));w.appendChild(inp);return w}
+    var base=el("input"); base.type="number"; base.inputMode="decimal"; base.min="0"; base.max="20"; base.step="0.5"; base.id="of_base"; base.value=v.base_pct||0;
+    var until=el("input"); until.type="date"; until.id="of_until"; until.value=v.base_until||"";
+    f.appendChild(field("हर दिन की आम छूट (%)",base));
+    f.appendChild(field("यह आम छूट इस तारीख़ तक (खाली = हमेशा)",until));
+    f.appendChild(el("b","","ख़ास दिनों की छूट (%) — आम छूट से ज़्यादा हो तभी लगेगी"));
+    var inputs=[];
+    for(var i=0;i<7;i++){
+      var x=el("input"); x.type="number"; x.inputMode="decimal"; x.min="0"; x.max="20"; x.step="0.5"; x.id="of_w"+i;
+      x.value=(v.weekday_pct&&v.weekday_pct[i])?v.weekday_pct[i]:"";
+      inputs.push(x); f.appendChild(field(WDN[i],x));
+    }
+    var save=el("button","","सेव करें"); f.appendChild(save);
+    var msg=el("div","msg"); msg.hidden=true; f.appendChild(msg);
+    c.appendChild(f);
+    save.onclick=function(){
+      var bad=false;
+      function num(x){var n=x.value===""?0:Number(x.value); if(!(n>=0&&n<=20)){bad=true} return n}
+      var cfg={base_pct:num(base),base_until:until.value||"",weekday_pct:{}};
+      inputs.forEach(function(x,i){var n=num(x); if(n>0) cfg.weekday_pct[String(i)]=n});
+      if(bad){msg.hidden=false;msg.className="msg bad";msg.textContent="छूट 0 से 20 के बीच लिखें।";return}
+      save.disabled=true;
+      sb.from("site_settings").upsert({key:"offers",value:cfg,updated_at:new Date().toISOString()}).then(function(r2){
+        save.disabled=false; msg.hidden=false;
+        if(r2.error){msg.className="msg bad";msg.textContent="सेव नहीं हुआ।"; return}
+        msg.className="msg"; msg.textContent="सेव हो गया। ग्राहक के पेज पर नया ऑफ़र दिखेगा।";
+      });
+    };
+  });
+}
+function draw(){
+  var box=$("list"); box.innerHTML="";
+  if(mode==="offers"){drawOffers();return}
+  if(mode==="leads"){
+    var ls=leads.filter(function(b){return lfilter==="all"||b.status===lfilter});
+    if(!ls.length){var e=el("div","muted","कोई जानकारी नहीं।");e.style.marginTop="14px";box.appendChild(e);return}
+    ls.forEach(function(b){box.appendChild(leadCard(b))}); return;
   }
-  if(b.status !== "cancelled"){
-    const no = el("button","bad","रद्द करें");
-    no.onclick = () => setStatus(b, "cancelled", "यह बुकिंग रद्द होगी और तारीख खाली हो जाएगी। पक्का?");
-    acts.appendChild(no);
+  var rows=all.filter(function(b){return filter==="all"||b.status===filter});
+  if(!rows.length){box.appendChild(el("div","muted","कोई बुकिंग नहीं।"));box.lastChild.style.marginTop="14px";return}
+  rows.forEach(function(b){box.appendChild(card(b))});
+}
+
+function kv(g,k,v){g.appendChild(el("b","",k));var d=el("div","",v);g.appendChild(d);return d}
+
+function card(b){
+  var c=el("div","box");
+  var top=el("div","top");
+  top.appendChild(el("b","",b.gym_name+" · "+String(b.id).slice(0,8).toUpperCase()));
+  top.appendChild(el("span","badge s-"+b.status,b.status));
+  c.appendChild(top);
+  var g=el("div","k");
+  kv(g,"नाम",b.customer_name);
+  var ph=kv(g,"फ़ोन","");
+  var a1=el("a","",b.phone); a1.href="tel:+91"+b.phone; ph.appendChild(a1);
+  ph.appendChild(document.createTextNode("  "));
+  var a2=el("a","","WhatsApp"); a2.href="https://wa.me/91"+b.phone; a2.target="_blank"; a2.rel="noopener"; ph.appendChild(a2);
+  kv(g,"शहर/पता",b.city+", "+b.address);
+  kv(g,"सेवा",b.service+(b.area_sqft?" · "+b.area_sqft+" sqft":""));
+  kv(g,"तारीख",fmtDate(b.preferred_date)+(b.area_sqft>1500?" (+1 दिन)":""));
+  kv(g,"अनुमान",estimate(b));
+  if(b.notes) kv(g,"नोट",b.notes).style.whiteSpace="pre-line";
+  kv(g,"एडवांस",b.advance_paid?("मिला "+inr(b.advance_amount||0)):"नहीं मिला");
+  if(b.status==="pending"){
+    var exp=b.hold_expires_at&&new Date(b.hold_expires_at)<new Date()&&!b.advance_paid;
+    kv(g,"होल्ड",(exp?"खत्म हो चुकी · ":"")+"तक "+fmtDT(b.hold_expires_at));
   }
-  c.appendChild(acts);
+  if(b.status==="cancelled"&&b.refund_amount!=null) kv(g,"वापसी",inr(b.refund_amount));
+  c.appendChild(g);
+
+  if(b.status==="pending"||b.status==="confirmed"){
+    var tools=el("div","row");
+    if(b.status==="pending"){
+      var adv=el("input"); adv.type="number"; adv.inputMode="numeric"; adv.id="adv-"+b.id; adv.placeholder="मिला एडवांस ₹";
+      if(b.quoted_amount!=null) adv.value=Math.round(b.quoted_amount*0.2);
+      c.appendChild(adv);
+      var ok=el("button","ok","एडवांस मिला · पक्की करें");
+      ok.onclick=function(){confirmIt(b,adv,ok)}; tools.appendChild(ok);
+    }
+    var cb=el("button","bad","रद्द करें"); tools.appendChild(cb);
+    c.appendChild(tools);
+    var panel=el("div","box"); panel.hidden=true; panel.style.margin="0";
+    var rf=el("input"); rf.type="number"; rf.inputMode="numeric"; rf.id="rf-"+b.id; rf.placeholder="वापस की रकम ₹ (0 भी चलेगा)";
+    if(b.advance_paid&&b.advance_amount) rf.value=Math.round(b.advance_amount*0.8);
+    var hint=el("div","muted","नियम: एडवांस का 20% कटता है, यानी 80% वापस।");
+    var yes=el("button","bad","हाँ, रद्द कर दो"); var no=el("button","sec","वापस");
+    var rr=el("div","row"); rr.appendChild(yes); rr.appendChild(no);
+    panel.appendChild(rf); panel.appendChild(hint); panel.appendChild(rr); c.appendChild(panel);
+    cb.onclick=function(){panel.hidden=false;cb.hidden=true};
+    no.onclick=function(){panel.hidden=true;cb.hidden=false};
+    yes.onclick=function(){cancelIt(b,rf,yes)};
+  }
   return c;
 }
 
-async function setStatus(b, status, ask){
-  if(!confirm(ask)) return;
-  const { error } = await db.from("Booking").update({ status }).eq("id", b.id);
-  if(error){ $("appMsg").textContent = "बदलाव नहीं हुआ: " + error.message; return; }
-  await load();
+function confirmIt(b,advInput,btn){
+  var v=Number(advInput.value);
+  if(!(v>0)){note("एडवांस की रकम लिखें।",1);return}
+  btn.disabled=true;
+  sb.from("Booking").update({status:"confirmed",advance_paid:true,advance_amount:v}).eq("id",b.id).select("id").then(function(r){
+    btn.disabled=false;
+    if(r.error||!r.data||!r.data.length){note("सेव नहीं हुआ।",1);return}
+    note("पक्की हो गई।"); load();
+  });
+}
+function cancelIt(b,rfInput,btn){
+  var v=rfInput.value===""?0:Number(rfInput.value);
+  if(!(v>=0)){note("वापसी की रकम सही लिखें।",1);return}
+  btn.disabled=true;
+  sb.from("Booking").update({status:"cancelled",refund_amount:v}).eq("id",b.id).select("id").then(function(r){
+    btn.disabled=false;
+    if(r.error||!r.data||!r.data.length){note("सेव नहीं हुआ।",1);return}
+    note("रद्द हो गई, तारीख फिर खाली हो गई।"); load();
+  });
 }
 
-init();
+if(!window.supabase){note("Supabase लाइब्रेरी लोड नहीं हुई। इंटरनेट जाँचें।",1)} else start();
+})();
 </script>
 </body>
 </html>
