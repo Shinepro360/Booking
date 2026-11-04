@@ -133,7 +133,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   <div><label for="service" data-i18n="l_service">x</label>
     <select id="service">
       <option value="" data-i18n="choose">x</option>
-      <option value="Floor Care Service">Floor Care Service (₹4 / sq ft)</option>
+      <option value="Floor Care Service">Floor Care Service (₹3 / sq ft)</option>
       <option value="Full Deep Cleaning">Full Deep Cleaning (₹5 / sq ft)</option>
     </select><div class="err" data-for="service"></div></div>
 
@@ -277,7 +277,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   var API = "https://nohnzyyaawarvhrmaota.supabase.co/functions/v1/public-booking";
 
   // ===== दाम और ऑफ़र (यहाँ बदलें) =====
-  var RATES = {"Floor Care Service":4, "Full Deep Cleaning":5};   // ₹ प्रति वर्ग फ़ुट
+  var RATES = {"Floor Care Service":3, "Full Deep Cleaning":5};   // ₹ प्रति वर्ग फ़ुट
   var MIRROR_RATE = 1.5, DUMBBELL_PRICE = 1500;
   // ऑफ़र की सेटिंग एडमिन पैनल से बदलती है और सर्वर से आती है। नीचे सिर्फ़ शुरुआती (बैकअप) मान हैं।
   var OFF = {base_pct:5, base_until:"2026-11-30", weekday_pct:{"2":10,"4":10}};
