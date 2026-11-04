@@ -154,8 +154,8 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
         <div class="err" data-for="mirror_sqft"></div>
       </div>
     </div>
-    <div id="deepNote" class="note" hidden data-i18n="deepNote">x</div>
   </div>
+  <div id="deepNote" class="note" hidden data-i18n="deepNote">x</div>
 
   <div id="est" class="est" hidden></div>
 
@@ -175,7 +175,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
         <span><i style="background:var(--sel)"></i><span data-i18n="lg_sel">x</span></span>
         <span><i style="box-shadow:inset 0 0 0 2px var(--accent)"></i><span data-i18n="lg_hot">x</span></span>
       </div>
-      <div class="note" style="margin-top:8px" data-i18n="offerInfo">x</div>
+      <div class="note" style="margin-top:8px" id="offerInfo"></div>
     </div>
     <div class="picked" id="picked"></div>
     <div class="note" id="twoDay" hidden data-i18n="twoDay">x</div>
@@ -279,19 +279,27 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   // ===== दाम और ऑफ़र (यहाँ बदलें) =====
   var RATES = {"Floor Care Service":4, "Full Deep Cleaning":5};   // ₹ प्रति वर्ग फ़ुट
   var MIRROR_RATE = 1.5, DUMBBELL_PRICE = 1500;
-  var OFFER_WEEKDAY = {0:5, 1:10, 2:15, 3:0, 4:15, 5:0, 6:5};     // 0=रवि 1=सोम 2=मंगल 3=बुध 4=गुरु 5=शुक्र 6=शनि
-  var OFFER_LAST_WEEKEND = 10;                                    // महीने का आख़िरी शनि और रवि
-  var OFFER_RANGE = {from:11, to:15, pct:18};                     // इन तारीखों के काम पर
+  // ऑफ़र की सेटिंग एडमिन पैनल से बदलती है और सर्वर से आती है। नीचे सिर्फ़ शुरुआती (बैकअप) मान हैं।
+  var OFF = {base_pct:5, base_until:"2026-11-30", weekday_pct:{"2":10,"4":10}};
   // ====================================
   function offerPct(s){
     if(!s) return 0;
-    var a=s.split("-"), y=+a[0], m=+a[1], d=+a[2];
-    var wd=new Date(Date.UTC(y,m-1,d)).getUTCDay();
-    var dim=new Date(Date.UTC(y,m,0)).getUTCDate();
-    var p=OFFER_WEEKDAY[wd]||0;
-    if((wd===0||wd===6) && d+7>dim) p=Math.max(p,OFFER_LAST_WEEKEND);
-    if(d>=OFFER_RANGE.from && d<=OFFER_RANGE.to) p=Math.max(p,OFFER_RANGE.pct);
-    return p;
+    var a=s.split("-"), wd=new Date(Date.UTC(+a[0],+a[1]-1,+a[2])).getUTCDay();
+    var p=+((OFF.weekday_pct||{})[wd]||0);
+    var bp=+OFF.base_pct||0;
+    if(bp>0 && (!OFF.base_until || s<=OFF.base_until)) p=Math.max(p,bp);
+    return Math.max(0,Math.min(20,p));
+  }
+  function offerText(){
+    var names=T[LANG].wd, by={};
+    for(var d=0;d<7;d++){var p=+((OFF.weekday_pct||{})[d]||0); if(p>0)(by[p]=by[p]||[]).push(names[d])}
+    var parts=Object.keys(by).sort(function(x,y){return y-x}).map(function(p){return by[p].join(", ")+" "+p+"%"});
+    var bp=+OFF.base_pct||0;
+    if(!parts.length && bp<=0) return "";
+    var s=t("oi_head")+" ";
+    if(parts.length) s+=parts.join("; ")+". ";
+    if(bp>0) s+=t("oi_base")(parts.length>0,bp,OFF.base_until?fmt(OFF.base_until):"")+" ";
+    return s+t("oi_full");
   }
 
   var PRODUCTS = ["Gym Rubber Floor Cleaner","Gym Floor Polish","Dumbbell & Weight Plate Cleaner and Polish","Normal Floor Cleaner","Hand Wash Liquid"];
@@ -307,10 +315,13 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
       ad_dumb:"Dumbbell व Weight Plates सफ़ाई (+₹1,500, 30 dumbbell और 30 plates तक)",
       ad_mirror:"Mirror / Glass सफ़ाई (₹1.50 प्रति वर्ग फ़ुट)",
       l_mirror_area:"Mirror / Glass का क्षेत्रफल (वर्ग फ़ुट)",
-      deepNote:"Full Deep Cleaning में Mirror और Glass सफ़ाई पहले से शामिल है।",
+      deepNote:"Full Deep Cleaning में Mirror/Glass और Equipment (Dumbbell समेत) की सफ़ाई पहले से शामिल है, अलग ऐड-ऑन की ज़रूरत नहीं।",
       l_notes:"विशेष ज़रूरत (वैकल्पिक)",
       l_date:"काम की तारीख चुनें", lg_free:"खाली", lg_booked:"बुक है", lg_sel:"आपकी चुनी", lg_hot:"छूट वाला दिन",
-      offerInfo:"हर तारीख के नीचे लिखा % उस दिन की छूट है। मंगल/गुरु 15%, सोम 10%, शनि/रवि 5%, महीने के आख़िरी शनि/रवि 10%, और 11 से 15 तारीख को 18%। छूट पूरी रकम पर लगती है।",
+      wd:["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"],
+      oi_head:"हर तारीख के नीचे लिखा % उस दिन की छूट है।",
+      oi_base:function(other,p,u){return (other?"बाकी दिन ":"सभी दिन ")+p+"%"+(u?" ("+u+" तक, सीमित समय का ऑफ़र)":"")+"।"},
+      oi_full:"छूट पूरी रकम पर लगती है।",
       twoDay:"1500 वर्ग फ़ुट से बड़े जिम में काम 2 दिन चलता है, इसलिए चुनी तारीख और अगली तारीख दोनों खाली होनी चाहिए।",
       calErr:"बुक हो चुकी तारीखें अभी लोड नहीं हो पाईं। फिर भी आप तारीख चुन सकते हैं, हम कॉल पर पक्का करेंगे।",
       t_title:"ज़रूरी बातें",
@@ -362,10 +373,13 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
       ad_dumb:"Dumbbell & weight plate cleaning (+₹1,500, up to 30 dumbbells and 30 plates)",
       ad_mirror:"Mirror / glass cleaning (₹1.50 per sq ft)",
       l_mirror_area:"Mirror / glass area (sq ft)",
-      deepNote:"Mirror and glass cleaning is already included in Full Deep Cleaning.",
+      deepNote:"Mirror/glass and equipment (including dumbbell) cleaning is already included in Full Deep Cleaning, so no separate add-ons are needed.",
       l_notes:"Special requirements (optional)",
       l_date:"Choose the work date", lg_free:"Available", lg_booked:"Booked", lg_sel:"Your pick", lg_hot:"Offer day",
-      offerInfo:"The % under each date is that day's discount. Tue/Thu 15%, Mon 10%, Sat/Sun 5%, last Sat/Sun of the month 10%, and 18% on the 11th to 15th. The discount applies to the full amount.",
+      wd:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+      oi_head:"The % under each date is that day's discount.",
+      oi_base:function(other,p,u){return (other?"Other days ":"All days ")+p+"%"+(u?" (until "+u+", limited-time offer)":"")+"."},
+      oi_full:"The discount applies to the full amount.",
       twoDay:"Gyms above 1500 sq ft need 2 days of work, so the chosen date and the next date must both be free.",
       calErr:"Booked dates could not be loaded right now. You can still pick a date and we will confirm on the call.",
       t_title:"Important points",
@@ -468,7 +482,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
       else if(!isFree(s)){cls+=" booked"; dis=true}
       else {
         var p = offerPct(s);
-        if(p>0){ badge='<small>'+p+'%</small>'; if(p>=15) cls+=" hot"; }
+        if(p>0){ badge='<small>'+p+'%</small>'; if(p>=10) cls+=" hot"; }
         if(s===selected) cls+=" sel";
       }
       html += '<button type="button" class="'+cls+'" data-d="'+s+'"'+(dis?' disabled':'')+'>'+d+badge+'</button>';
@@ -480,6 +494,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
     var po = offerPct(selected);
     $("picked").textContent = selected ? t("picked")+fmt(selected)+(po?" · "+po+"% "+t("offerWord"):"") : "";
     $("twoDay").hidden = !needsTwoDays();
+    var ot=offerText(); $("offerInfo").textContent=ot; $("offerInfo").hidden=!ot;
   }
 
   // ---------- रकम का अनुमान ----------
@@ -487,7 +502,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
     var sv=$("service").value, a=+$("area_sqft").value;
     if(!sv || !(a>0)) return null;
     var base=a*RATES[sv], add=0;
-    if($("ad_dumb").checked) add+=DUMBBELL_PRICE;
+    if(sv==="Floor Care Service" && $("ad_dumb").checked) add+=DUMBBELL_PRICE;
     if(sv==="Floor Care Service" && $("ad_mirror").checked){var m=+$("mirror_sqft").value; if(m>0) add+=m*MIRROR_RATE;}
     var total=base+add, pct=offerPct(selected), fin=Math.round(total*(100-pct)/100);
     return {base:base,add:add,total:total,pct:pct,fin:fin,adv:Math.round(fin*0.2)};
@@ -510,10 +525,9 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
 
   function updateService(){
     var v=$("service").value;
-    $("areaBox").hidden=!v; $("addons").hidden=!v;
-    $("mirrorBox").hidden = v!=="Floor Care Service";
+    $("areaBox").hidden=!v; $("addons").hidden = v!=="Floor Care Service";
     $("deepNote").hidden = v!=="Full Deep Cleaning";
-    if(v!=="Floor Care Service"){$("ad_mirror").checked=false;$("mirrorArea").hidden=true}
+    if(v!=="Floor Care Service"){$("ad_dumb").checked=false;$("ad_mirror").checked=false;$("mirrorArea").hidden=true}
     refresh();
   }
   $("service").addEventListener("change",updateService);
@@ -532,9 +546,10 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
   function loadBooked(){
     fetch(API).then(function(r){return r.json()}).then(function(j){
       if(!j||!j.ok) throw 0;
+      if(j.offers && typeof j.offers==="object") OFF=j.offers;
       booked={}; (j.booked_days||[]).forEach(function(d){booked[String(d).slice(0,10)]=1});
       if(selected && !isFree(selected)) selected="";
-      $("calErr").hidden=true; render();
+      $("calErr").hidden=true; updateEst(); render();
     }).catch(function(){$("calErr").hidden=false});
   }
 
@@ -605,7 +620,7 @@ footer{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
       phone:normPhone($("phone").value), city:$("city").value.trim(), address:$("address").value.trim(),
       service:sv, area_sqft:+$("area_sqft").value, preferred_date:selected, website:$("website").value,
       notes:$("notes").value.trim(),
-      addons:{dumbbell:$("ad_dumb").checked, mirror_sqft:(sv==="Floor Care Service"&&$("ad_mirror").checked)?+$("mirror_sqft").value:0}
+      addons:{dumbbell:(sv==="Floor Care Service"&&$("ad_dumb").checked), mirror_sqft:(sv==="Floor Care Service"&&$("ad_mirror").checked)?+$("mirror_sqft").value:0}
     };
     BUSY=true; $("submit").disabled=true; $("submit").textContent=t("sending");
     post(body,function(o){
